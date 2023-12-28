@@ -1,4 +1,57 @@
-# 🏗 Scaffold-ETH 2
+# 💸 EasyPay 💸
+
+💸 dApp for requesting payments in a currency (like USD, ETH and BTC), and accept different type of valid tokens that share a common value using [Chainlink Price Feeds](https://docs.chain.link/data-feeds/price-feeds).
+
+🐣 Project being developed by [Newbie's Lounge](https://lulox.notion.site/Newbie-s-Lounge-68ea7c4c5f1a4ec29786be6a76516878)
+👷‍♀️ To view current development tasks, [join this Trello board](https://trello.com/invite/b/s0vot1BA/ATTI366c508087a404ccf9343def4d76d1ce6F7899AA/newbies-lounge).
+🧰 To chat with other buidlers about this project, [join our Telegram group](https://t.me/+FwCZPG51UhwzOTZh)
+🛠️ To collaborate, [fork and pull](https://github.com/susam/gitpr) a request to this repo.
+
+## Quickstart
+
+To get started with EasyPay, follow the steps below:
+
+1. Clone this repo & install dependencies
+
+```
+git clone https://github.com/luloxi/EasyPay.git
+cd EasyPay
+yarn install
+```
+
+2. Run a local network in the first terminal:
+
+```
+yarn chain
+```
+
+This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `hardhat.config.ts`.
+
+3. On a second terminal, deploy the test contract:
+
+```
+yarn deploy
+```
+
+This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
+
+4. On a third terminal, start your NextJS app:
+
+```
+yarn start
+```
+
+Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the contract component or the example ui in the frontend. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+
+Run smart contract test with `yarn hardhat:test`
+
+- Edit your smart contract `EasyPay.sol` in `packages/hardhat/contracts`
+- Edit your frontend in `packages/nextjs/pages`
+- Edit your deployment scripts in `packages/hardhat/deploy`
+
+🏗 Project created using [Scaffold-ETH 2](https://scaffoldeth.io/)
+
+## 🏗 About Scaffold-ETH 2
 
 🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
 
