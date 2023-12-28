@@ -20,29 +20,43 @@ contract EasyPay {
     */
     mapping(uint256 requestId => PayRequest) public payRequests;
 
+    // Custom errors
+    error RequestDoesNotExist();
+    error InsufficientEther(uint256 requestedAmount, uint256 actualAmount);
+    error PaymentAlreadyCompleted();
+    error FailedToSendEther();
+
     function requestPayment(uint256 _amount) public {
         requests++;
         payRequests[requests] = PayRequest(_amount, msg.sender, false);
     }
 
     function pay(uint256 _requestId) public payable {
-        require(payRequests[_requestId].receiver != address(0), "Request doesn't exist or was made by a dumb human!" );
-        require(payRequests[_requestId].amount <= msg.value, "Ether sent must be equal or greater than requested amount!");
-        require(payRequests[_requestId].completed == false, "Request has already been paid!");
-        payRequests[_requestId].completed = true;
+        PayRequest storage request = payRequests[_requestId];
+
+        if (request.receiver == address(0)) revert RequestDoesNotExist();
+
+        if (request.amount > msg.value)
+            revert InsufficientEther(request.amount, msg.value);
+
+        if (request.completed) revert PaymentAlreadyCompleted();
+
+        request.completed = true;
+
         // Call returns a boolean value indicating success or failure.
         // This is the current recommended method to use to transfer ETH.
-        (bool sent, ) = payRequests[_requestId].receiver.call{value: msg.value}("");
-        require(sent, "Failed to send Ether, try again next block!");
+        (bool sent, ) = request.receiver.call{value: msg.value}("");
+
+        if (!sent) revert FailedToSendEther();
     }
 
     // Function in case a payment is received where msg.data must be empty
     receive() external payable {
-        require(msg.sender == address(0), "Are you stupid or what? Take care of your ETH!");
+        if (msg.sender != address(0)) revert FailedToSendEther();
     }
 
     // Fallback function is called when msg.data is not empty
     fallback() external payable {
-        require(msg.sender == address(0), "Are you stupid or what? Take care of your ETH!");
+        if (msg.sender != address(0)) revert FailedToSendEther();
     }
 }
