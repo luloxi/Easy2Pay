@@ -13,7 +13,7 @@ struct PayRequest {
     bool completed;
 }
 
-contract Easy2Pay {
+contract EasyPay {
     address public owner;
 
     uint256 requests;
@@ -23,17 +23,17 @@ contract Easy2Pay {
     mapping(uint256 requestId => PayRequest) public payRequests;
 
     // Custom errors
-    error Easy2Pay__RequestDoesNotExist();
-    error Easy2Pay__InsufficientEther(
+    error EasyPay__RequestDoesNotExist();
+    error EasyPay__InsufficientEther(
         uint256 requestedAmount,
         uint256 actualAmount
     );
-    error Easy2Pay__PaymentAlreadyCompleted();
-    error Easy2Pay__FailedToSendEther();
-    error Easy2Pay__UnauthorizedAccess();
+    error EasyPay__PaymentAlreadyCompleted();
+    error EasyPay__FailedToSendEther();
+    error EasyPay__UnauthorizedAccess();
 
     modifier onlyOwner() {
-        if (msg.sender != owner) revert Easy2Pay__UnauthorizedAccess();
+        if (msg.sender != owner) revert EasyPay__UnauthorizedAccess();
         _;
     }
 
@@ -50,12 +50,12 @@ contract Easy2Pay {
         PayRequest storage request = payRequests[_requestId];
 
         if (request.receiver == address(0))
-            revert Easy2Pay__RequestDoesNotExist();
+            revert EasyPay__RequestDoesNotExist();
 
         if (request.amount > msg.value)
-            revert Easy2Pay__InsufficientEther(request.amount, msg.value);
+            revert EasyPay__InsufficientEther(request.amount, msg.value);
 
-        if (request.completed) revert Easy2Pay__PaymentAlreadyCompleted();
+        if (request.completed) revert EasyPay__PaymentAlreadyCompleted();
 
         request.completed = true;
 
@@ -63,17 +63,17 @@ contract Easy2Pay {
         // This is the current recommended method to use to transfer ETH.
         (bool sent, ) = request.receiver.call{value: msg.value}("");
 
-        if (!sent) revert Easy2Pay__FailedToSendEther();
+        if (!sent) revert EasyPay__FailedToSendEther();
     }
 
     // Function in case a payment is received where msg.data must be empty
     receive() external payable {
-        if (msg.sender != address(0)) revert Easy2Pay__FailedToSendEther();
+        if (msg.sender != address(0)) revert EasyPay__FailedToSendEther();
     }
 
     // Fallback function is called when msg.data is not empty
     fallback() external payable {
-        if (msg.sender != address(0)) revert Easy2Pay__FailedToSendEther();
+        if (msg.sender != address(0)) revert EasyPay__FailedToSendEther();
     }
 
     function setOwner(address _newOwner) public onlyOwner {
