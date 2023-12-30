@@ -15,13 +15,11 @@ contract DeployScript is ScaffoldETHDeploy {
             );
         }
         vm.startBroadcast(deployerPrivateKey);
-        EasyPay easyPay = new EasyPay(
-            // vm.addr(deployerPrivateKey)
-        );
+        EasyPay easyPay = new EasyPay();
         console.logString(
             string.concat(
                 "EasyPay deployed at: ",
-                vm.toString(address(yourContract))
+                vm.toString(address(easyPay))
             )
         );
         vm.stopBroadcast();
