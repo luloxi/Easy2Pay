@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "../contracts/EasyPay.sol";
+import "../contracts/Easy2Pay.sol";
 import "./DeployHelpers.s.sol";
 
 contract DeployScript is ScaffoldETHDeploy {
@@ -15,10 +15,10 @@ contract DeployScript is ScaffoldETHDeploy {
             );
         }
         vm.startBroadcast(deployerPrivateKey);
-        EasyPay easyPay = new EasyPay();
+        Easy2Pay easyPay = new Easy2Pay();
         console.logString(
             string.concat(
-                "EasyPay deployed at: ",
+                "Easy2Pay deployed at: ",
                 vm.toString(address(easyPay))
             )
         );
