@@ -9,18 +9,16 @@ pragma solidity ^0.8.22;
 */
 struct PayRequest {
     uint256 amount;
-    address receiver;
     bool completed;
 }
 
 contract EasyPay {
     address public owner;
 
-    uint256 requests;
     /** 
     @dev Mapping to store PayRequest structs mapped to a unique requestId
     */
-    mapping(uint256 requestId => PayRequest) public payRequests;
+    mapping(address receiver => PayRequest[]) public payRequests;
 
     // Custom errors
     error EasyPay__RequestDoesNotExist();
@@ -42,14 +40,18 @@ contract EasyPay {
     }
 
     function requestPayment(uint256 _amount) public {
-        requests++;
-        payRequests[requests] = PayRequest(_amount, msg.sender, false);
+        uint256 id = payRequests[msg.sender].length;
+        payRequests[msg.sender].push(PayRequest(_amount, false));
     }
 
-    function pay(uint256 _requestId) public payable {
-        PayRequest storage request = payRequests[_requestId];
+    function getRequests(address receiver) public view returns(PayRequest[] memory) {
+        return payRequests[receiver];
+    }
 
-        if (request.receiver == address(0))
+    function pay(address receiver, uint256 _requestId) public payable {
+        PayRequest storage request = payRequests[receiver][_requestId];
+
+        if (receiver == address(0))
             revert EasyPay__RequestDoesNotExist();
 
         if (request.amount > msg.value)
@@ -61,7 +63,7 @@ contract EasyPay {
 
         // Call returns a boolean value indicating success or failure.
         // This is the current recommended method to use to transfer ETH.
-        (bool sent, ) = request.receiver.call{value: msg.value}("");
+        (bool sent, ) = receiver.call{value: msg.value}("");
 
         if (!sent) revert EasyPay__FailedToSendEther();
     }
