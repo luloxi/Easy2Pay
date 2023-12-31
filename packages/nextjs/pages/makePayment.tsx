@@ -14,7 +14,7 @@ const Requests: NextPage = () => {
   const amount = searchParams.get("amount") || undefined;
   const requestId = searchParams.get("requestId") || undefined;
   const { writeAsync: sendPaymentTx, isLoading } = useScaffoldContractWrite({
-    contractName: "EasyPay",
+    contractName: "Easy2Pay",
     functionName: "pay",
     args: [recipient, BigInt(requestId || "0")],
     // for payable functions, expressed in eth

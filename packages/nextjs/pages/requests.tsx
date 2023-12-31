@@ -32,7 +32,7 @@ const Requests: NextPage = () => {
   );
 
   const { data: paymentRequests } = useScaffoldContractRead({
-    contractName: "EasyPay",
+    contractName: "Easy2Pay",
     functionName: "getRequests",
     args: [address],
   });
@@ -62,7 +62,7 @@ const Requests: NextPage = () => {
 
   return (
     <>
-      <MetaHeader title="Payment Requests | EasyPay" description="List all payment requests" />
+      <MetaHeader title="Payment Requests | Easy2Pay" description="List all payment requests" />
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center mb-3">

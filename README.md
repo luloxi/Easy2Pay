@@ -1,4 +1,4 @@
-# 💸 EasyPay 💸
+# 💸 Easy2Pay 💸
 
 💸 dApp for requesting payments in a currency (like USD, ETH and BTC), and accept different type of valid tokens that share a common value using [Chainlink Price Feeds](https://docs.chain.link/data-feeds/price-feeds).
 
@@ -9,15 +9,15 @@
 
 ## Quickstart
 
-To get started with EasyPay, follow the steps below:
+To get started with Easy2Pay, follow the steps below:
 
 1. Make sure you have the [foundry toolkit installed](https://book.getfoundry.sh/getting-started/installation).
 
 2. Clone this repo & install dependencies
 
 ```
-git clone https://github.com/luloxi/EasyPay.git
-cd EasyPay
+git clone https://github.com/luloxi/Easy2Pay.git
+cd Easy2Pay
 yarn install
 ```
 
@@ -47,7 +47,7 @@ Visit your app on: `http://localhost:3000`. You can interact with your smart con
 
 Run smart contract test with `yarn hardhat:test`
 
-- Edit your smart contract `EasyPay.sol` in `packages/hardhat/contracts`
+- Edit your smart contract `Easy2Pay.sol` in `packages/hardhat/contracts`
 - Edit your frontend in `packages/nextjs/pages`
 - Edit your deployment scripts in `packages/hardhat/deploy`
 
@@ -65,7 +65,7 @@ Run smart contract test with `yarn hardhat:test`
 
 ## Contents
 
-- [💸 EasyPay 💸](#-easypay-)
+- [💸 Easy2Pay 💸](#-easypay-)
   - [Quickstart](#quickstart)
   - [🏗 About Scaffold-ETH 2](#-about-scaffold-eth-2)
   - [Contents](#contents)
