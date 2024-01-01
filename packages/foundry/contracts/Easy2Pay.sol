@@ -3,8 +3,8 @@ pragma solidity ^0.8.19;
 
 /**
  * @dev Struct to store payment requests
- * @variables amount: Amount of USD requested
- * @variables completed: Boolean to determine if payment was succesfully made
+ * @param amount: Amount of USD requested
+ * @param completed: Boolean to determine if payment was succesfully made
  */
 struct PayRequest {
     uint256 amount;
@@ -45,14 +45,27 @@ contract Easy2Pay {
         if (msg.sender != address(0)) revert Easy2Pay__FailedToSendEther();
     }
 
+    /**
+     * @dev Currently not useful. Delegating ownership of the contract to another address, 
+     * @param _newOwner: Address of new owner
+     */
     function setOwner(address _newOwner) public onlyOwner {
         owner = _newOwner;
     }
 
+    /**
+     * @dev Function to start a transaction through Easy2Pay
+     * @param _amount Amount of ETH requested to fulfill payment
+     */
     function requestPayment(uint256 _amount) public {
         payRequests[msg.sender].push(PayRequest(_amount, false));
     }
 
+    /**
+     * @dev Function to pay a PayRequest
+     * @param receiver: Address of the receiver
+     * @param _requestId: ID for the PayRequest asociated to the receiver
+     */
     function pay(address receiver, uint256 _requestId) public payable {
         PayRequest storage request = payRequests[receiver][_requestId];
 
@@ -75,6 +88,10 @@ contract Easy2Pay {
         if (!sent) revert Easy2Pay__FailedToSendEther();
     }
 
+    /**
+     * @dev Function to view a list of PayRequest asociated to an address
+     * @param receiver: Address that we're looking at
+     */
     function getRequests(address receiver) public view returns (PayRequest[] memory) {
         return payRequests[receiver];
     }
