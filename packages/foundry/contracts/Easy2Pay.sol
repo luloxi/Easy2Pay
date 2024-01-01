@@ -7,7 +7,7 @@ pragma solidity ^0.8.19;
  * @param completed: Boolean to determine if payment was succesfully made
  */
 struct PayRequest {
-    uint256 amount;
+    uint248 amount;
     bool completed;
 }
 
@@ -57,7 +57,7 @@ contract Easy2Pay {
      * @dev Function to start a transaction through Easy2Pay
      * @param _amount Amount of ETH requested to fulfill payment
      */
-    function requestPayment(uint256 _amount) public {
+    function requestPayment(uint248 _amount) public {
         payRequests[msg.sender].push(PayRequest(_amount, false));
     }
 
