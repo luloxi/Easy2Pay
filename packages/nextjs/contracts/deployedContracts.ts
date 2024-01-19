@@ -7,173 +7,173 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     Easy2Pay: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
+          type: "constructor",
           inputs: [],
           stateMutability: "nonpayable",
-          type: "constructor",
         },
         {
-          inputs: [],
-          name: "Easy2Pay__FailedToSendEther",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "requestedAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "actualAmount",
-              type: "uint256",
-            },
-          ],
-          name: "Easy2Pay__InsufficientEther",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "Easy2Pay__PaymentAlreadyCompleted",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "Easy2Pay__RequestDoesNotExist",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "Easy2Pay__UnauthorizedAccess",
-          type: "error",
-        },
-        {
-          stateMutability: "payable",
           type: "fallback",
+          stateMutability: "payable",
         },
         {
+          type: "receive",
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "getRequests",
           inputs: [
             {
-              internalType: "address",
               name: "receiver",
               type: "address",
+              internalType: "address",
             },
           ],
-          name: "getRequests",
           outputs: [
             {
-              components: [
-                {
-                  internalType: "uint256",
-                  name: "amount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "bool",
-                  name: "completed",
-                  type: "bool",
-                },
-              ],
-              internalType: "struct PayRequest[]",
               name: "",
               type: "tuple[]",
+              internalType: "struct PayRequest[]",
+              components: [
+                {
+                  name: "amount",
+                  type: "uint248",
+                  internalType: "uint248",
+                },
+                {
+                  name: "completed",
+                  type: "bool",
+                  internalType: "bool",
+                },
+              ],
             },
           ],
           stateMutability: "view",
-          type: "function",
         },
         {
-          inputs: [],
+          type: "function",
           name: "owner",
+          inputs: [],
           outputs: [
             {
-              internalType: "address",
               name: "",
               type: "address",
+              internalType: "address",
             },
           ],
           stateMutability: "view",
-          type: "function",
         },
         {
+          type: "function",
+          name: "pay",
           inputs: [
             {
-              internalType: "address",
               name: "receiver",
               type: "address",
+              internalType: "address",
             },
             {
-              internalType: "uint256",
               name: "_requestId",
               type: "uint256",
+              internalType: "uint256",
             },
           ],
-          name: "pay",
           outputs: [],
           stateMutability: "payable",
-          type: "function",
         },
         {
+          type: "function",
+          name: "payRequests",
           inputs: [
             {
-              internalType: "address",
               name: "receiver",
               type: "address",
+              internalType: "address",
             },
             {
-              internalType: "uint256",
               name: "",
               type: "uint256",
+              internalType: "uint256",
             },
           ],
-          name: "payRequests",
           outputs: [
             {
-              internalType: "uint256",
               name: "amount",
-              type: "uint256",
+              type: "uint248",
+              internalType: "uint248",
             },
             {
-              internalType: "bool",
               name: "completed",
               type: "bool",
+              internalType: "bool",
             },
           ],
           stateMutability: "view",
-          type: "function",
         },
         {
+          type: "function",
+          name: "requestPayment",
           inputs: [
             {
-              internalType: "uint256",
               name: "_amount",
-              type: "uint256",
+              type: "uint248",
+              internalType: "uint248",
             },
           ],
-          name: "requestPayment",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
         },
         {
+          type: "function",
+          name: "setOwner",
           inputs: [
             {
-              internalType: "address",
               name: "_newOwner",
               type: "address",
+              internalType: "address",
             },
           ],
-          name: "setOwner",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
         },
         {
-          stateMutability: "payable",
-          type: "receive",
+          type: "error",
+          name: "Easy2Pay__FailedToSendEther",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "Easy2Pay__InsufficientEther",
+          inputs: [
+            {
+              name: "requestedAmount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "actualAmount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "Easy2Pay__PaymentAlreadyCompleted",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "Easy2Pay__RequestDoesNotExist",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "Easy2Pay__UnauthorizedAccess",
+          inputs: [],
         },
       ],
       inheritedFunctions: {},

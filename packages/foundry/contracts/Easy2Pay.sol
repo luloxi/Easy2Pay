@@ -3,10 +3,13 @@ pragma solidity ^0.8.19;
 
 /**
  * @dev Struct to store payment requests
+ * @param payer: Address expected to pay for the request.
+                - address(0) equals anyone.
  * @param amount: Amount of USD requested
  * @param completed: Boolean to determine if payment was succesfully made
  */
 struct PayRequest {
+    address payer;
     uint248 amount;
     bool completed;
 }
@@ -20,8 +23,11 @@ contract Easy2Pay {
     mapping(address receiver => PayRequest[]) public payRequests;
 
     // Custom errors
-    error Easy2Pay__RequestDoesNotExist();
-    error Easy2Pay__InsufficientEther(uint256 requestedAmount, uint256 actualAmount);
+    error Easy2Pay__InvalidPayer(address payer);
+    error Easy2Pay__InsufficientEther(
+        uint256 requestedAmount,
+        uint256 actualAmount
+    );
     error Easy2Pay__PaymentAlreadyCompleted();
     error Easy2Pay__FailedToSendEther();
     error Easy2Pay__UnauthorizedAccess();
@@ -46,19 +52,21 @@ contract Easy2Pay {
     }
 
     /**
-     * @dev Currently not useful. Delegating ownership of the contract to another address, 
+     * @dev Currently not useful. Delegating ownership of the contract to another address,
      * @param _newOwner: Address of new owner
      */
-    function setOwner(address _newOwner) public onlyOwner {
+    function setOwner(address _newOwner) external onlyOwner {
         owner = _newOwner;
     }
 
     /**
      * @dev Function to start a transaction through Easy2Pay
      * @param _amount Amount of ETH requested to fulfill payment
+     * @param _payer Intended payer for the request.
+     *               - address(0) is for no intended payer
      */
-    function requestPayment(uint248 _amount) public {
-        payRequests[msg.sender].push(PayRequest(_amount, false));
+    function requestPayment(uint248 _amount, address _payer) public {
+        payRequests[msg.sender].push(PayRequest(_payer, _amount, false));
     }
 
     /**
@@ -69,11 +77,13 @@ contract Easy2Pay {
     function pay(address receiver, uint256 _requestId) public payable {
         PayRequest storage request = payRequests[receiver][_requestId];
 
-        if (receiver == address(0)) {
-            revert Easy2Pay__RequestDoesNotExist();
+        if (request.payer != address(0)) {
+            if (request.payer != msg.sender) {
+                revert Easy2Pay__InvalidPayer(msg.sender);
+            }
         }
 
-        if (request.amount > msg.value) {
+        if (request.amount < msg.value) {
             revert Easy2Pay__InsufficientEther(request.amount, msg.value);
         }
 
@@ -83,7 +93,7 @@ contract Easy2Pay {
 
         // Call returns a boolean value indicating success or failure.
         // This is the current recommended method to use to transfer ETH.
-        (bool sent,) = receiver.call{value: msg.value}("");
+        (bool sent, ) = receiver.call{value: msg.value}("");
 
         if (!sent) revert Easy2Pay__FailedToSendEther();
     }
@@ -92,7 +102,9 @@ contract Easy2Pay {
      * @dev Function to view a list of PayRequest asociated to an address
      * @param receiver: Address that we're looking at
      */
-    function getRequests(address receiver) public view returns (PayRequest[] memory) {
+    function getRequests(
+        address receiver
+    ) public view returns (PayRequest[] memory) {
         return payRequests[receiver];
     }
 }
