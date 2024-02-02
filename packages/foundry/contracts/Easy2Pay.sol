@@ -4,9 +4,9 @@ pragma solidity ^0.8.19;
 /**
  * @dev Struct to store payment requests
  * @param payer: Address expected to pay for the request.
-                - address(0) equals anyone.
+ *               - address(0) equals anyone.
  * @param amount: Amount of USD requested
- * @param completed: Boolean to determine if payment was succesfully made
+ * @param completed: Boolean to determine if payment was successfully made
  */
 struct PayRequest {
     address payer;
@@ -20,14 +20,11 @@ contract Easy2Pay {
     /**
      * @dev Mapping to store PayRequest structs mapped to a unique requestId
      */
-    mapping(address receiver => PayRequest[]) public payRequests;
+    mapping(address => PayRequest[]) public payRequests;
 
     // Custom errors
     error Easy2Pay__InvalidPayer(address payer);
-    error Easy2Pay__InsufficientEther(
-        uint256 requestedAmount,
-        uint256 actualAmount
-    );
+    error Easy2Pay__InsufficientEther(uint256 requestedAmount, uint256 actualAmount);
     error Easy2Pay__PaymentAlreadyCompleted();
     error Easy2Pay__FailedToSendEther();
     error Easy2Pay__UnauthorizedAccess();
@@ -72,7 +69,7 @@ contract Easy2Pay {
     /**
      * @dev Function to pay a PayRequest
      * @param receiver: Address of the receiver
-     * @param _requestId: ID for the PayRequest asociated to the receiver
+     * @param _requestId: ID for the PayRequest associated with the receiver
      */
     function pay(address receiver, uint256 _requestId) public payable {
         PayRequest storage request = payRequests[receiver][_requestId];
@@ -99,12 +96,10 @@ contract Easy2Pay {
     }
 
     /**
-     * @dev Function to view a list of PayRequest asociated to an address
+     * @dev Function to view a list of PayRequest associated with an address
      * @param receiver: Address that we're looking at
      */
-    function getRequests(
-        address receiver
-    ) public view returns (PayRequest[] memory) {
+    function getRequests(address receiver) public view returns (PayRequest[] memory) {
         return payRequests[receiver];
     }
 }

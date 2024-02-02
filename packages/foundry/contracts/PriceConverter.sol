@@ -1,30 +1,39 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+// Import Chainlink Aggregator Interface
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
-// Why is this a library and not abstract?
-// Why not an interface?
+/**
+ * @title PriceConverter
+ * @dev Library to convert Ethereum (ETH) amounts to USD using Chainlink Price Feeds
+ */
 library PriceConverter {
-    // We could make this public, but then we'd have to deploy it
+    /**
+     * @dev Internal function to retrieve the latest ETH/USD price from Chainlink Price Feeds
+     * @return uint256 The latest ETH/USD price in 18 decimal places
+     */
     function getPrice() internal view returns (uint256) {
         // Sepolia ETH / USD Address
-        // https://docs.chain.link/data-feeds/price-feeds/addresses
+        // Reference: https://docs.chain.link/data-feeds/price-feeds/addresses
         AggregatorV3Interface priceFeed = AggregatorV3Interface(
             0x694AA1769357215DE4FAC081bf1f309aDC325306
         );
         (, int256 answer, , , ) = priceFeed.latestRoundData();
-        // ETH/USD rate in 18 digit
+        // ETH/USD rate in 18 decimal places
         return uint256(answer * 10000000000);
     }
 
-    // 1000000000
-    function getConversionRate(
-        uint256 ethAmount
-    ) internal view returns (uint256) {
+    /**
+     * @dev Internal function to convert a given amount of ETH to USD
+     * @param ethAmount uint256 The amount of Ethereum (ETH) to convert
+     * @return uint256 The converted amount in USD
+     */
+    function getConversionRate(uint256 ethAmount) internal view returns (uint256) {
         uint256 ethPrice = getPrice();
+        // Calculate the amount in USD by multiplying the ETH amount with the ETH price and adjusting for 18 decimal places
         uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;
-        // the actual ETH/USD conversion rate, after adjusting the extra 0s.
+        // Return the actual ETH/USD conversion rate
         return ethAmountInUsd;
     }
 }
