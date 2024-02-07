@@ -15,11 +15,11 @@ contract DeployScript is ScaffoldETHDeploy {
             );
         }
         vm.startBroadcast(deployerPrivateKey);
-        Easy2Pay easyPay = new Easy2Pay();
+        Easy2Pay easy2Pay = new Easy2Pay();
         console.logString(
             string.concat(
                 "Easy2Pay deployed at: ",
-                vm.toString(address(easyPay))
+                vm.toString(address(easy2Pay))
             )
         );
         vm.stopBroadcast();
@@ -32,5 +32,5 @@ contract DeployScript is ScaffoldETHDeploy {
         exportDeployments();
     }
 
-    function test() public {}
+    
 }

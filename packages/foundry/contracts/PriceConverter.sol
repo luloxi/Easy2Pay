@@ -29,7 +29,9 @@ library PriceConverter {
      * @param ethAmount uint256 The amount of Ethereum (ETH) to convert
      * @return uint256 The converted amount in USD
      */
-    function getConversionRate(uint256 ethAmount) internal view returns (uint256) {
+    function getConversionRate(
+        uint256 ethAmount
+    ) internal view returns (uint256) {
         uint256 ethPrice = getPrice();
         // Calculate the amount in USD by multiplying the ETH amount with the ETH price and adjusting for 18 decimal places
         uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;

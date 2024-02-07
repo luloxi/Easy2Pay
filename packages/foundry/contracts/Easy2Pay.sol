@@ -18,13 +18,16 @@ contract Easy2Pay {
     address public owner;
 
     /**
-     * @dev Mapping to store PayRequest structs mapped to a unique requestId
+     * @dev Mapping to store PayRequest structs mapped to an array of PayRequest
      */
     mapping(address => PayRequest[]) public payRequests;
 
     // Custom errors
     error Easy2Pay__InvalidPayer(address payer);
-    error Easy2Pay__InsufficientEther(uint256 requestedAmount, uint256 actualAmount);
+    error Easy2Pay__InsufficientEther(
+        uint256 requestedAmount,
+        uint256 actualAmount
+    );
     error Easy2Pay__PaymentAlreadyCompleted();
     error Easy2Pay__FailedToSendEther();
     error Easy2Pay__UnauthorizedAccess();
@@ -99,7 +102,9 @@ contract Easy2Pay {
      * @dev Function to view a list of PayRequest associated with an address
      * @param receiver: Address that we're looking at
      */
-    function getRequests(address receiver) public view returns (PayRequest[] memory) {
+    function getRequests(
+        address receiver
+    ) public view returns (PayRequest[] memory) {
         return payRequests[receiver];
     }
 }
