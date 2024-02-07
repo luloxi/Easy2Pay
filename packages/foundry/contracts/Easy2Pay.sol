@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {PriceConverter} from "./PriceConverter.sol";
+
 /**
  * @dev Struct to store payment requests
  * @param payer: Address expected to pay for the request.
@@ -15,7 +18,10 @@ struct PayRequest {
 }
 
 contract Easy2Pay {
+    using PriceConverter for uint256;
+    
     address public owner;
+    AggregatorV3Interface private priceFeed;
 
     /**
      * @dev Mapping to store PayRequest structs mapped to an array of PayRequest
@@ -37,7 +43,8 @@ contract Easy2Pay {
         _;
     }
 
-    constructor() {
+    constructor(address _priceFeed) {
+        priceFeed = AggregatorV3Interface(_priceFeed);
         owner = msg.sender;
     }
 
@@ -106,5 +113,9 @@ contract Easy2Pay {
         address receiver
     ) public view returns (PayRequest[] memory) {
         return payRequests[receiver];
+    }
+
+        function getVersion() public view returns (uint256){
+        return priceFeed.version();
     }
 }

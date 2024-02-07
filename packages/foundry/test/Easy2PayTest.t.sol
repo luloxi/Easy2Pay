@@ -14,4 +14,9 @@ contract Easy2PayTest is Test {
     function testOwnerIsMsgSender() public {
         assertEq(easy2pay.owner(), address(this));
     }
+
+    function testPriceFeedVersionIsAccurate() public {
+        uint256 version = easy2pay.getVersion();
+        assertEq(version, 4);
+    }
 }

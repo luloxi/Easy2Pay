@@ -13,12 +13,9 @@ library PriceConverter {
      * @dev Internal function to retrieve the latest ETH/USD price from Chainlink Price Feeds
      * @return uint256 The latest ETH/USD price in 18 decimal places
      */
-    function getPrice() internal view returns (uint256) {
+    function getPrice(AggregatorV3Interface priceFeed) internal view returns (uint256) {
         // Sepolia ETH / USD Address
         // Reference: https://docs.chain.link/data-feeds/price-feeds/addresses
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(
-            0x694AA1769357215DE4FAC081bf1f309aDC325306
-        );
         (, int256 answer, , , ) = priceFeed.latestRoundData();
         // ETH/USD rate in 18 decimal places
         return uint256(answer * 10000000000);
@@ -30,9 +27,9 @@ library PriceConverter {
      * @return uint256 The converted amount in USD
      */
     function getConversionRate(
-        uint256 ethAmount
+        uint256 ethAmount, AggregatorV3Interface priceFeed
     ) internal view returns (uint256) {
-        uint256 ethPrice = getPrice();
+        uint256 ethPrice = getPrice(priceFeed);
         // Calculate the amount in USD by multiplying the ETH amount with the ETH price and adjusting for 18 decimal places
         uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;
         // Return the actual ETH/USD conversion rate
