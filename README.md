@@ -5,7 +5,7 @@
 ## How can I contribute to this build?
 
 - 👷‍♀️ To view current development tasks, [check the Issues on the Github repo](https://github.com/luloxi/Easy2Pay/issues).
-- 🧰 To chat with other buidlers about this project, [join our Telegram group](https://t.me/+FwCZPG51UhwzOTZh)
+- 🧰 To chat with other buidlers about this project, [join Newbies Lounge Telegram group](https://t.me/+FwCZPG51UhwzOTZh)
 - 🛠️ To submit a PR (Pull Request), [fork and pull](https://github.com/susam/gitpr) a request to this repo.
 - 🐣 Make sure you know the ETH Tech Stack and understand [how to make a dApp using Scaffold-ETH 2](https://lulox.notion.site/Newbie-s-Lounge-68ea7c4c5f1a4ec29786be6a76516878).
 
