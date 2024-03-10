@@ -14,6 +14,7 @@ import {PriceConverter} from "./PriceConverter.sol";
 struct PayRequest {
     address payer;
     uint248 amount;
+    string motive;
     bool completed;
 }
 
@@ -69,8 +70,8 @@ contract Easy2Pay {
      * @param _payer Intended payer for the request.
      *               - address(0) is for no intended payer
      */
-    function requestPayment(uint248 _amount, address _payer) public {
-        payRequests[msg.sender].push(PayRequest(_payer, _amount, false));
+    function requestPayment(uint248 _amount, address _payer, string memory _motive) public {
+        payRequests[msg.sender].push(PayRequest(_payer, _amount, _motive, false));
     }
 
     /**
