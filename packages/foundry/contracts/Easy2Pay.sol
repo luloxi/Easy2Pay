@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+// import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {PriceConverter} from "./PriceConverter.sol";
 
 /**
@@ -19,9 +19,9 @@ struct PayRequest {
 
 contract Easy2Pay {
     using PriceConverter for uint256;
-    
+
     address public owner;
-    AggregatorV3Interface private priceFeed;
+    // AggregatorV3Interface private priceFeed;
 
     /**
      * @dev Mapping to store PayRequest structs mapped to an array of PayRequest
@@ -30,10 +30,7 @@ contract Easy2Pay {
 
     // Custom errors
     error Easy2Pay__InvalidPayer(address payer);
-    error Easy2Pay__InsufficientEther(
-        uint256 requestedAmount,
-        uint256 actualAmount
-    );
+    error Easy2Pay__InsufficientEther(uint256 requestedAmount, uint256 actualAmount);
     error Easy2Pay__PaymentAlreadyCompleted();
     error Easy2Pay__FailedToSendEther();
     error Easy2Pay__UnauthorizedAccess();
@@ -43,8 +40,8 @@ contract Easy2Pay {
         _;
     }
 
-    constructor(address _priceFeed) {
-        priceFeed = AggregatorV3Interface(_priceFeed);
+    constructor( /* address _priceFeed */ ) {
+        // priceFeed = AggregatorV3Interface(_priceFeed);
         owner = msg.sender;
     }
 
@@ -100,7 +97,7 @@ contract Easy2Pay {
 
         // Call returns a boolean value indicating success or failure.
         // This is the current recommended method to use to transfer ETH.
-        (bool sent, ) = receiver.call{value: msg.value}("");
+        (bool sent,) = receiver.call{value: msg.value}("");
 
         if (!sent) revert Easy2Pay__FailedToSendEther();
     }
@@ -109,13 +106,11 @@ contract Easy2Pay {
      * @dev Function to view a list of PayRequest associated with an address
      * @param receiver: Address that we're looking at
      */
-    function getRequests(
-        address receiver
-    ) public view returns (PayRequest[] memory) {
+    function getRequests(address receiver) public view returns (PayRequest[] memory) {
         return payRequests[receiver];
     }
 
-        function getVersion() public view returns (uint256){
-        return priceFeed.version();
-    }
+    // function getVersion() public view returns (uint256) {
+    //     return priceFeed.version();
+    // }
 }

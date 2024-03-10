@@ -39,6 +39,11 @@ const deployedContracts = {
               internalType: "struct PayRequest[]",
               components: [
                 {
+                  name: "payer",
+                  type: "address",
+                  internalType: "address",
+                },
+                {
                   name: "amount",
                   type: "uint248",
                   internalType: "uint248",
@@ -89,7 +94,7 @@ const deployedContracts = {
           name: "payRequests",
           inputs: [
             {
-              name: "receiver",
+              name: "",
               type: "address",
               internalType: "address",
             },
@@ -100,6 +105,11 @@ const deployedContracts = {
             },
           ],
           outputs: [
+            {
+              name: "payer",
+              type: "address",
+              internalType: "address",
+            },
             {
               name: "amount",
               type: "uint248",
@@ -121,6 +131,11 @@ const deployedContracts = {
               name: "_amount",
               type: "uint248",
               internalType: "uint248",
+            },
+            {
+              name: "_payer",
+              type: "address",
+              internalType: "address",
             },
           ],
           outputs: [],
@@ -162,12 +177,18 @@ const deployedContracts = {
         },
         {
           type: "error",
-          name: "Easy2Pay__PaymentAlreadyCompleted",
-          inputs: [],
+          name: "Easy2Pay__InvalidPayer",
+          inputs: [
+            {
+              name: "payer",
+              type: "address",
+              internalType: "address",
+            },
+          ],
         },
         {
           type: "error",
-          name: "Easy2Pay__RequestDoesNotExist",
+          name: "Easy2Pay__PaymentAlreadyCompleted",
           inputs: [],
         },
         {
