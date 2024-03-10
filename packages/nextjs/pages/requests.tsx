@@ -5,6 +5,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
@@ -73,9 +74,11 @@ const Requests: NextPage = () => {
           <table className="table table-zebra w-full">
             <thead>
               <tr>
+                <th className="bg-primary">Payer</th>
                 <th className="bg-primary">Amount</th>
-                <th className="bg-primary">Complete</th>
+                <th className="bg-primary">Motive</th>
                 <th className="bg-primary">Link</th>
+                <th className="bg-primary">Complete</th>
               </tr>
             </thead>
             <tbody>
@@ -89,13 +92,17 @@ const Requests: NextPage = () => {
                 paymentRequests?.map((request, requestId) => {
                   return (
                     <tr key={requestId}>
-                      <td>{formatEther(request.amount)} ETH</td>
-                      <td>{request.completed ? "Yes" : "No"}</td>
                       <td>
-                        <button className="btn" onClick={() => showLink(request, requestId)}>
+                        <Address address={request.payer} />{" "}
+                      </td>
+                      <td>{formatEther(request.amount)} ETH</td>
+                      <td>{request.motive}</td>
+                      <td>
+                        <button className="btn btn-primary bg-orange-500" onClick={() => showLink(request, requestId)}>
                           Show Link
                         </button>
                       </td>
+                      <td>{request.completed ? "Yes" : "No"}</td>
                     </tr>
                   );
                 })

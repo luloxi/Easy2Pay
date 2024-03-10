@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   const { writeAsync: requestPayment } = useScaffoldContractWrite({
     contractName: "Easy2Pay",
     functionName: "requestPayment",
-    args: [parseEther(etherAmount), payerAddress],
+    args: [parseEther(etherAmount), payerAddress, motive],
   });
 
   return (
@@ -29,7 +29,8 @@ const Home: NextPage = () => {
           !
         </h1>
         <p className="text-center">
-          Create a payment request to a specific address, and share it on a QR code!
+          Create a payment request to a specific address, <br />
+          and share it as a QR code or an URL!
           <br />
           <i className="text-green-500">currently only accepting native ETH as payment currency</i>
         </p>
@@ -52,7 +53,7 @@ const Home: NextPage = () => {
 
           <div className="card-actions justify-end p-4">
             <button
-              className="btn btn-warning mt-4"
+              className="btn btn-primary bg-orange-500 mt-4"
               onClick={event => {
                 event.preventDefault();
                 requestPayment();

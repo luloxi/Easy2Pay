@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     Easy2Pay: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
       abi: [
         {
           type: "constructor",
@@ -47,6 +47,11 @@ const deployedContracts = {
                   name: "amount",
                   type: "uint248",
                   internalType: "uint248",
+                },
+                {
+                  name: "motive",
+                  type: "string",
+                  internalType: "string",
                 },
                 {
                   name: "completed",
@@ -116,6 +121,11 @@ const deployedContracts = {
               internalType: "uint248",
             },
             {
+              name: "motive",
+              type: "string",
+              internalType: "string",
+            },
+            {
               name: "completed",
               type: "bool",
               internalType: "bool",
@@ -136,6 +146,11 @@ const deployedContracts = {
               name: "_payer",
               type: "address",
               internalType: "address",
+            },
+            {
+              name: "_motive",
+              type: "string",
+              internalType: "string",
             },
           ],
           outputs: [],
