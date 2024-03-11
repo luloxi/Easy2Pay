@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     Easy2Pay: {
-      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           type: "constructor",
@@ -49,7 +49,7 @@ const deployedContracts = {
                   internalType: "uint248",
                 },
                 {
-                  name: "motive",
+                  name: "reason",
                   type: "string",
                   internalType: "string",
                 },
@@ -121,7 +121,7 @@ const deployedContracts = {
               internalType: "uint248",
             },
             {
-              name: "motive",
+              name: "reason",
               type: "string",
               internalType: "string",
             },
@@ -148,7 +148,7 @@ const deployedContracts = {
               internalType: "address",
             },
             {
-              name: "_motive",
+              name: "_reason",
               type: "string",
               internalType: "string",
             },
@@ -168,6 +168,49 @@ const deployedContracts = {
           ],
           outputs: [],
           stateMutability: "nonpayable",
+        },
+        {
+          type: "event",
+          name: "RequestCreated",
+          inputs: [
+            {
+              name: "requestId",
+              type: "uint256",
+              indexed: true,
+              internalType: "uint256",
+            },
+            {
+              name: "requester",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "payer",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "amount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "reason",
+              type: "string",
+              indexed: false,
+              internalType: "string",
+            },
+            {
+              name: "creationTime",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
         },
         {
           type: "error",
