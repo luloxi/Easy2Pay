@@ -20,7 +20,7 @@ export const menuLinks: HeaderMenuLink[] = [
   },
   {
     label: "View Requests",
-    href: "/requests",
+    href: "/paymentRequests",
     icon: <QueueListIcon className="h-4 w-4" />,
   },
 

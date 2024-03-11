@@ -178,7 +178,7 @@ const Requests: NextPage = () => {
                       <td>{request.reason}</td>
                       <td>
                         <button className="btn btn-primary bg-orange-500" onClick={() => showLink(requestId)}>
-                          Show Link
+                          Share
                         </button>
                       </td>
                       <td>{request.completed ? "Yes" : "No"}</td>

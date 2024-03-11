@@ -26,7 +26,7 @@ const RequestDetailsPage: React.FC = () => {
           <h1 className="text-center mt-4 text-3xl">Payment Request #{requestIdString}</h1>
           <div className="card-body">
             <h2 className="card-title">Shoes!</h2>
-            <p>{requestData?.requester?.toLowerCase()}If a dog chews shoes whose shoes does he choose?</p>
+            <p>{requestData?.requester}If a dog chews shoes whose shoes does he choose?</p>
             <div className="card-actions justify-end">
               <button className="btn btn-primary">Buy Now</button>
             </div>
