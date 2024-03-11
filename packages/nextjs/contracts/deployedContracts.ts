@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     Easy2Pay: {
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
       abi: [
         {
           type: "constructor",
@@ -15,29 +15,26 @@ const deployedContracts = {
           stateMutability: "nonpayable",
         },
         {
-          type: "fallback",
-          stateMutability: "payable",
-        },
-        {
-          type: "receive",
-          stateMutability: "payable",
-        },
-        {
           type: "function",
-          name: "getRequests",
+          name: "getRequest",
           inputs: [
             {
-              name: "receiver",
-              type: "address",
-              internalType: "address",
+              name: "requestId",
+              type: "uint256",
+              internalType: "uint256",
             },
           ],
           outputs: [
             {
               name: "",
-              type: "tuple[]",
-              internalType: "struct PayRequest[]",
+              type: "tuple",
+              internalType: "struct PayRequest",
               components: [
+                {
+                  name: "requester",
+                  type: "address",
+                  internalType: "address",
+                },
                 {
                   name: "requestId",
                   type: "uint256",
@@ -101,13 +98,8 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "payRequests",
+          name: "payRequestsById",
           inputs: [
-            {
-              name: "",
-              type: "address",
-              internalType: "address",
-            },
             {
               name: "",
               type: "uint256",
@@ -115,6 +107,11 @@ const deployedContracts = {
             },
           ],
           outputs: [
+            {
+              name: "requester",
+              type: "address",
+              internalType: "address",
+            },
             {
               name: "requestId",
               type: "uint256",
@@ -139,6 +136,19 @@ const deployedContracts = {
               name: "completed",
               type: "bool",
               internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "requestCount",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
             },
           ],
           stateMutability: "view",

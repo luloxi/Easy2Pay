@@ -1,17 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-// import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {PriceConverter} from "./PriceConverter.sol";
 
-/**
- * @dev Struct to store payment requests
- * @param payer: Address expected to pay for the request.
- *               - address(0) equals anyone.
- * @param amount: Amount of USD requested
- * @param completed: Boolean to determine if payment was successfully made
- */
 struct PayRequest {
+    address requester; // Added to identify the requester
     uint256 requestId;
     address payer;
     uint248 amount;
@@ -23,14 +16,8 @@ contract Easy2Pay {
     using PriceConverter for uint256;
 
     address public owner;
-    // AggregatorV3Interface private priceFeed;
-
-    /**
-     * @dev Mapping to store PayRequest structs mapped to an array of PayRequest
-     */
-    uint256 requestCount;
-
-    mapping(address => PayRequest[]) public payRequests;
+    uint256 public requestCount;
+    mapping(uint256 => PayRequest) public payRequestsById; // New mapping to store requests by requestId
 
     event RequestCreated(
         uint256 indexed requestId,
@@ -42,7 +29,6 @@ contract Easy2Pay {
     );
     event RequestPaid(uint256 indexed requestId);
 
-    // Custom errors
     error Easy2Pay__InvalidPayer(address payer);
     error Easy2Pay__InsufficientEther(uint256 requestedAmount, uint256 actualAmount);
     error Easy2Pay__PaymentAlreadyCompleted();
@@ -54,48 +40,31 @@ contract Easy2Pay {
         _;
     }
 
-    constructor( /* address _priceFeed */ ) {
-        // priceFeed = AggregatorV3Interface(_priceFeed);
+    constructor() {
         owner = msg.sender;
     }
 
-    // Function in case a payment is received where msg.data must be empty
-    receive() external payable {
-        if (msg.sender != address(0)) revert Easy2Pay__FailedToSendEther();
-    }
-
-    // Fallback function is called when msg.data is not empty
-    fallback() external payable {
-        if (msg.sender != address(0)) revert Easy2Pay__FailedToSendEther();
-    }
-
-    /**
-     * @dev Currently not useful. Delegating ownership of the contract to another address,
-     * @param _newOwner: Address of new owner
-     */
     function setOwner(address _newOwner) external onlyOwner {
         owner = _newOwner;
     }
 
-    /**
-     * @dev Function to start a transaction through Easy2Pay
-     * @param _amount Amount of ETH requested to fulfill payment
-     * @param _payer Intended payer for the request.
-     *               - address(0) is for no intended payer
-     */
     function requestPayment(uint248 _amount, address _payer, string memory _reason) public {
-        requestCount++;
-        payRequests[msg.sender].push(PayRequest(requestCount, _payer, _amount, _reason, false));
+        PayRequest memory newRequest = PayRequest({
+            requester: msg.sender,
+            requestId: requestCount,
+            payer: _payer,
+            amount: _amount,
+            reason: _reason,
+            completed: false
+        });
+
+        payRequestsById[requestCount] = newRequest; // Store the request in the new mapping
         emit RequestCreated(requestCount, msg.sender, _payer, _amount, _reason, block.timestamp);
+        requestCount++;
     }
 
-    /**
-     * @dev Function to pay a PayRequest
-     * @param receiver: Address of the receiver
-     * @param _requestId: ID for the PayRequest associated with the receiver
-     */
     function pay(address receiver, uint256 _requestId) public payable {
-        PayRequest storage request = payRequests[receiver][_requestId];
+        PayRequest storage request = payRequestsById[_requestId];
 
         if (request.payer != address(0)) {
             if (request.payer != msg.sender) {
@@ -111,23 +80,13 @@ contract Easy2Pay {
 
         request.completed = true;
 
-        // Call returns a boolean value indicating success or failure.
-        // This is the current recommended method to use to transfer ETH.
         (bool sent,) = receiver.call{value: msg.value}("");
-
         if (!sent) revert Easy2Pay__FailedToSendEther();
-        emit RequestPaid(request.requestId);
+        emit RequestPaid(_requestId);
     }
 
-    /**
-     * @dev Function to view a list of PayRequest associated with an address
-     * @param receiver: Address that we're looking at
-     */
-    function getRequests(address receiver) public view returns (PayRequest[] memory) {
-        return payRequests[receiver];
+    function getRequest(uint256 requestId) public view returns (PayRequest memory) {
+        require(requestId <= requestCount, "Invalid requestId");
+        return payRequestsById[requestId];
     }
-
-    // function getVersion() public view returns (uint256) {
-    //     return priceFeed.version();
-    // }
 }
