@@ -12,9 +12,10 @@ import {PriceConverter} from "./PriceConverter.sol";
  * @param completed: Boolean to determine if payment was successfully made
  */
 struct PayRequest {
+    uint256 requestId;
     address payer;
     uint248 amount;
-    string motive;
+    string reason;
     bool completed;
 }
 
@@ -27,7 +28,19 @@ contract Easy2Pay {
     /**
      * @dev Mapping to store PayRequest structs mapped to an array of PayRequest
      */
+    uint256 requestCount;
+
     mapping(address => PayRequest[]) public payRequests;
+
+    event RequestCreated(
+        uint256 indexed requestId,
+        address indexed requester,
+        address indexed payer,
+        uint256 amount,
+        string reason,
+        uint256 creationTime
+    );
+    event RequestPaid(uint256 indexed requestId);
 
     // Custom errors
     error Easy2Pay__InvalidPayer(address payer);
@@ -70,8 +83,10 @@ contract Easy2Pay {
      * @param _payer Intended payer for the request.
      *               - address(0) is for no intended payer
      */
-    function requestPayment(uint248 _amount, address _payer, string memory _motive) public {
-        payRequests[msg.sender].push(PayRequest(_payer, _amount, _motive, false));
+    function requestPayment(uint248 _amount, address _payer, string memory _reason) public {
+        requestCount++;
+        payRequests[msg.sender].push(PayRequest(requestCount, _payer, _amount, _reason, false));
+        emit RequestCreated(requestCount, msg.sender, _payer, _amount, _reason, block.timestamp);
     }
 
     /**
@@ -101,6 +116,7 @@ contract Easy2Pay {
         (bool sent,) = receiver.call{value: msg.value}("");
 
         if (!sent) revert Easy2Pay__FailedToSendEther();
+        emit RequestPaid(request.requestId);
     }
 
     /**

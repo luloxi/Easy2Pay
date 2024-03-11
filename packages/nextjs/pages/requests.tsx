@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import type { NextPage } from "next";
-import QRCode from "react-qr-code";
 import { useInterval } from "usehooks-ts";
 import { isAddress } from "viem";
 import { useAccount } from "wagmi";
@@ -10,9 +10,9 @@ import { TokenAmount } from "~~/components/scaffold-eth/TokenAmount";
 import { SearchBar } from "~~/components/searchBar/SearchBar";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 import { FilterProps } from "~~/types/Easy2PayTypes";
-import { notification } from "~~/utils/scaffold-eth";
 
 interface PaymentRequest {
+  requestId: number;
   requester: string;
   payer: string;
   amount: bigint;
@@ -20,14 +20,9 @@ interface PaymentRequest {
   reason: string;
 }
 
-interface QRCodeInfo extends PaymentRequest {
-  url: string;
-}
-
 const PAGE_SIZE = 5;
 
 const Requests: NextPage = () => {
-  const [qrCodeInfo, setQrCodeInfo] = useState<QRCodeInfo>();
   const [searchInput, setSearchInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,6 +37,8 @@ const Requests: NextPage = () => {
 
   const { address } = useAccount();
 
+  const router = useRouter();
+
   const { data: RequestCreatedHistory } = useScaffoldEventHistory({
     contractName: "Easy2Pay",
     eventName: "RequestCreated",
@@ -49,59 +46,63 @@ const Requests: NextPage = () => {
     watch: true,
   });
 
+  const filterAndSetData = useCallback(
+    (data: any[]) => {
+      let filteredData = data;
+
+      if (searchFilters[0]?.selected) {
+        filteredData = data?.filter((event: any) => event.args["requester"] === address);
+      }
+
+      if (searchFilters[1]?.selected) {
+        filteredData = data?.filter((event: any) => event.args["payer"] === address);
+      }
+
+      if (searchFilters[2]?.selected) {
+        filteredData = filteredData?.filter(
+          (event1: any) => !data?.some((event2: any) => event1?.args?.["requestId"] === event2?.args?.["requestId"]),
+        );
+      }
+
+      if (searchInput && isAddress(searchInput)) {
+        filteredData = data?.filter(
+          (event: any) => event.args["requester"] === searchInput || event.args["payer"] === searchInput,
+        );
+      } else if (searchInput && !isNaN(parseInt(searchInput))) {
+        const adjustedId = data !== undefined ? data?.length - parseInt(searchInput) : 0;
+        const accessedElement = data?.[adjustedId];
+        filteredData = accessedElement !== undefined ? [accessedElement] : [];
+      }
+
+      // setTotalPages(Math.ceil(filteredData?.length / PAGE_SIZE));
+      // setTotalItems(filteredData?.length);
+
+      const startIndex = (currentPage - 1) * PAGE_SIZE;
+      const endIndex = Math.min(startIndex + PAGE_SIZE, filteredData?.length);
+
+      const slicedData = filteredData?.slice(startIndex, endIndex);
+
+      // Assuming each element in slicedData has a "args" property
+      const mappedData = slicedData?.map(event => ({
+        requestId: event.args.requestId,
+        amount: event.args.amount,
+        completed: false, // Assuming this is not available in the event, adjust as needed
+        payer: event.args.payer,
+        requester: event.args.requester,
+        reason: event.args.reason,
+      }));
+
+      setRequestBox(mappedData);
+      setIsLoading(false);
+    },
+    [address, searchFilters, searchInput, currentPage],
+  );
+
   useEffect(() => {
     if (RequestCreatedHistory) {
       filterAndSetData(RequestCreatedHistory);
     }
-  }, [RequestCreatedHistory, searchFilters, searchInput, currentPage]);
-
-  const filterAndSetData = (data: any[]) => {
-    let filteredData = data;
-
-    if (searchFilters[0]?.selected) {
-      filteredData = data?.filter((event: any) => event.args["requester"] === address);
-    }
-
-    if (searchFilters[1]?.selected) {
-      filteredData = data?.filter((event: any) => event.args["payer"] === address);
-    }
-
-    if (searchFilters[2]?.selected) {
-      filteredData = filteredData?.filter(
-        (event1: any) => !data?.some((event2: any) => event1?.args?.["requestId"] === event2?.args?.["requestId"]),
-      );
-    }
-
-    if (searchInput && isAddress(searchInput)) {
-      filteredData = data?.filter(
-        (event: any) => event.args["requester"] === searchInput || event.args["payer"] === searchInput,
-      );
-    } else if (searchInput && !isNaN(parseInt(searchInput))) {
-      const adjustedId = data !== undefined ? data?.length - parseInt(searchInput) : 0;
-      const accessedElement = data?.[adjustedId];
-      filteredData = accessedElement !== undefined ? [accessedElement] : [];
-    }
-
-    // setTotalPages(Math.ceil(filteredData?.length / PAGE_SIZE));
-    // setTotalItems(filteredData?.length);
-
-    const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const endIndex = Math.min(startIndex + PAGE_SIZE, filteredData?.length);
-
-    const slicedData = filteredData?.slice(startIndex, endIndex);
-
-    // Assuming each element in slicedData has a "args" property
-    const mappedData = slicedData?.map(event => ({
-      amount: event.args.amount,
-      completed: false, // Assuming this is not available in the event, adjust as needed
-      payer: event.args.payer,
-      requester: event.args.requester,
-      reason: event.args.reason,
-    }));
-
-    setRequestBox(mappedData);
-    setIsLoading(false);
-  };
+  }, [RequestCreatedHistory, filterAndSetData]);
 
   useInterval(() => {
     // Fetch events periodically if needed
@@ -131,20 +132,11 @@ const Requests: NextPage = () => {
     setSearchInput(newSearchInput);
   };
 
-  const showLink = (request: PaymentRequest, requestId: number) => {
-    const url = `${window.origin}/makePayment?recipient=${address}&amount=${request.amount}&requestId=${requestId}`;
-    setQrCodeInfo({
-      ...request,
-      url,
-    });
-    const modalEl = document.getElementById("qr_code_modal") as any;
-    modalEl?.showModal();
-  };
-
-  const copyUrl = async (url?: string) => {
-    if (url) {
-      await navigator.clipboard.writeText(url);
-      notification.success("Copied payment link");
+  const showLink = (requestId: number) => {
+    // Use the actual requestId from the mapped data
+    const actualRequestId = requestBox?.[requestId]?.requestId;
+    if (actualRequestId !== undefined) {
+      router.push(`/requests/${actualRequestId}`);
     }
   };
 
@@ -194,7 +186,7 @@ const Requests: NextPage = () => {
                       </td>
                       <td>{request.reason}</td>
                       <td>
-                        <button className="btn btn-primary bg-orange-500" onClick={() => showLink(request, requestId)}>
+                        <button className="btn btn-primary bg-orange-500" onClick={() => showLink(requestId)}>
                           Show Link
                         </button>
                       </td>
@@ -206,17 +198,6 @@ const Requests: NextPage = () => {
             </table>
           </div>
         )}
-
-        <dialog id="qr_code_modal" className="modal">
-          <div className="modal-box flex justify-center">
-            <div className="cursor-pointer" data-tip="Click to copy link" onClick={() => copyUrl(qrCodeInfo?.url)}>
-              <QRCode value={qrCodeInfo?.url || ""} />
-            </div>
-          </div>
-          <form method="dialog" className="modal-backdrop cursor-default">
-            <button>close</button>
-          </form>
-        </dialog>
       </div>
     </>
   );
