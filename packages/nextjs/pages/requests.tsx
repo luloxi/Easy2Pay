@@ -20,19 +20,14 @@ interface PaymentRequest {
   reason: string;
 }
 
-const PAGE_SIZE = 5;
-
 const Requests: NextPage = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentPage, setCurrentPage] = useState(1);
   const [searchFilters, setSearchFilters] = useState<FilterProps[]>([
     { label: "Only requests made", selected: false },
     { label: "Only requests received", selected: false },
     { label: "Only completed requests", selected: false },
   ]);
-  // const [totalItems, setTotalItems] = useState(0);
-  // const [totalPages, setTotalPages] = useState(Math.ceil(totalItems / PAGE_SIZE));
   const [requestBox, setRequestBox] = useState<PaymentRequest[]>([]);
 
   const { address } = useAccount();
@@ -46,76 +41,73 @@ const Requests: NextPage = () => {
     watch: true,
   });
 
+  const { data: RequestPaidHistory } = useScaffoldEventHistory({
+    contractName: "Easy2Pay",
+    eventName: "RequestPaid",
+    fromBlock: BigInt(process.env.NEXT_PUBLIC_DEPLOY_BLOCK || "0"),
+    watch: true,
+  });
+
   const filterAndSetData = useCallback(
-    (data: any[]) => {
-      let filteredData = data;
+    (createdData: any[], paidData: any[]) => {
+      let filteredData = createdData;
 
       if (searchFilters[0]?.selected) {
-        filteredData = data?.filter((event: any) => event.args["requester"] === address);
+        filteredData = createdData?.filter((event: any) => event.args["requester"] === address);
       }
 
       if (searchFilters[1]?.selected) {
-        filteredData = data?.filter((event: any) => event.args["payer"] === address);
+        filteredData = createdData?.filter((event: any) => event.args["payer"] === address);
       }
 
       if (searchFilters[2]?.selected) {
-        filteredData = filteredData?.filter(
-          (event1: any) => !data?.some((event2: any) => event1?.args?.["requestId"] === event2?.args?.["requestId"]),
+        filteredData = filteredData?.filter((event1: any) =>
+          paidData?.some((event2: any) => event1?.args?.["requestId"] === event2?.args?.["requestId"]),
         );
       }
 
       if (searchInput && isAddress(searchInput)) {
-        filteredData = data?.filter(
+        filteredData = createdData?.filter(
           (event: any) => event.args["requester"] === searchInput || event.args["payer"] === searchInput,
         );
       } else if (searchInput && !isNaN(parseInt(searchInput))) {
-        const adjustedId = data !== undefined ? data?.length - parseInt(searchInput) : 0;
-        const accessedElement = data?.[adjustedId];
+        const adjustedId = createdData !== undefined ? createdData?.length - parseInt(searchInput) : 0;
+        const accessedElement = createdData?.[adjustedId];
         filteredData = accessedElement !== undefined ? [accessedElement] : [];
       }
 
-      // setTotalPages(Math.ceil(filteredData?.length / PAGE_SIZE));
-      // setTotalItems(filteredData?.length);
-
-      const startIndex = (currentPage - 1) * PAGE_SIZE;
-      const endIndex = Math.min(startIndex + PAGE_SIZE, filteredData?.length);
-
-      const slicedData = filteredData?.slice(startIndex, endIndex);
-
-      // Assuming each element in slicedData has a "args" property
-      const mappedData = slicedData?.map(event => ({
-        requestId: event.args.requestId,
-        amount: event.args.amount,
-        completed: false, // Assuming this is not available in the event, adjust as needed
-        payer: event.args.payer,
-        requester: event.args.requester,
-        reason: event.args.reason,
-      }));
+      const mappedData = filteredData?.map(event => {
+        const requestId = event.args.requestId;
+        const completed = paidData?.some((paidEvent: any) => paidEvent.args.requestId === requestId);
+        return {
+          requestId: requestId,
+          amount: event.args.amount,
+          completed: completed || false,
+          payer: event.args.payer,
+          requester: event.args.requester,
+          reason: event.args.reason,
+        };
+      });
 
       setRequestBox(mappedData);
       setIsLoading(false);
     },
-    [address, searchFilters, searchInput, currentPage],
+    [address, searchFilters, searchInput],
   );
 
   useEffect(() => {
-    if (RequestCreatedHistory) {
-      filterAndSetData(RequestCreatedHistory);
+    if (RequestCreatedHistory && RequestPaidHistory) {
+      filterAndSetData(RequestCreatedHistory, RequestPaidHistory);
     }
-  }, [RequestCreatedHistory, filterAndSetData]);
+  }, [RequestCreatedHistory, RequestPaidHistory, filterAndSetData]);
 
   useInterval(() => {
     // Fetch events periodically if needed
   }, 1500);
 
-  // const onPageChange = (page: number) => {
-  //   setIsLoading(true);
-  //   setCurrentPage(page);
-  // };
-
   const updateSearchFilters = (index: number) => {
     setIsLoading(true);
-    setCurrentPage(1);
+
     setSearchFilters(prevFilters => {
       const updatedFilters = [...prevFilters];
       updatedFilters[index] = {
@@ -128,12 +120,11 @@ const Requests: NextPage = () => {
 
   const updateSearchInput = (newSearchInput: string) => {
     setIsLoading(true);
-    setCurrentPage(1);
+
     setSearchInput(newSearchInput);
   };
 
   const showLink = (requestId: number) => {
-    // Use the actual requestId from the mapped data
     const actualRequestId = requestBox?.[requestId]?.requestId;
     if (actualRequestId !== undefined) {
       router.push(`/requests/${actualRequestId}`);

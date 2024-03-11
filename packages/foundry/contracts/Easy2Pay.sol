@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import {PriceConverter} from "./PriceConverter.sol";
 
 struct PayRequest {
-    address requester; // Added to identify the requester
+    address requester;
     uint256 requestId;
     address payer;
     uint248 amount;
@@ -17,7 +17,7 @@ contract Easy2Pay {
 
     address public owner;
     uint256 public requestCount;
-    mapping(uint256 => PayRequest) public payRequestsById; // New mapping to store requests by requestId
+    mapping(uint256 => PayRequest) public payRequestsById;
 
     event RequestCreated(
         uint256 indexed requestId,
@@ -58,12 +58,12 @@ contract Easy2Pay {
             completed: false
         });
 
-        payRequestsById[requestCount] = newRequest; // Store the request in the new mapping
+        payRequestsById[requestCount] = newRequest;
         emit RequestCreated(requestCount, msg.sender, _payer, _amount, _reason, block.timestamp);
         requestCount++;
     }
 
-    function pay(address receiver, uint256 _requestId) public payable {
+    function pay(uint256 _requestId) public payable {
         PayRequest storage request = payRequestsById[_requestId];
 
         if (request.payer != address(0)) {
@@ -80,7 +80,7 @@ contract Easy2Pay {
 
         request.completed = true;
 
-        (bool sent,) = receiver.call{value: msg.value}("");
+        (bool sent,) = request.requester.call{value: msg.value}("");
         if (!sent) revert Easy2Pay__FailedToSendEther();
         emit RequestPaid(_requestId);
     }
