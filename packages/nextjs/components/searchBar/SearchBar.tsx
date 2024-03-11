@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Box, Button, Checkbox, Flex, Input, Stack, Text } from "@chakra-ui/react";
-import { isHex } from "viem";
 import { SearchBarProps } from "~~/types/Easy2PayTypes";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -9,11 +8,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({ searchFilters, updateSearc
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (input === "" || !isNaN(parseInt(input)) || isHex(input)) {
+    const isNumberOrHex = /^(0x)?[0-9a-f]+$/i.test(input) || !isNaN(Number(input));
+
+    if (input === "" || isNumberOrHex) {
       updateSearchInput(input);
     } else {
       notification.error("Check your input for correctness");
     }
+  };
+
+  const handleReset = () => {
+    setInput("");
+    updateSearchInput("");
+    // updateSearchFilters(0); // Reset filters to default
   };
 
   return (
@@ -41,6 +48,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({ searchFilters, updateSearc
             colorScheme="orange"
           >
             Search
+          </Button>
+          <Button
+            type="button"
+            variant="solid"
+            backgroundColor={"red"}
+            padding={4}
+            paddingX={6}
+            borderRadius={4}
+            textColor={"white"}
+            onClick={handleReset}
+          >
+            Reset
           </Button>
         </Flex>
       </form>
