@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {PriceConverter} from "./PriceConverter.sol";
-
 struct PayRequest {
     address requester;
     uint256 requestId;
@@ -13,8 +11,6 @@ struct PayRequest {
 }
 
 contract Easy2Pay {
-    using PriceConverter for uint256;
-
     address public owner;
     uint256 public requestCount;
     mapping(uint256 => PayRequest) public payRequestsById;
@@ -49,6 +45,12 @@ contract Easy2Pay {
     }
 
     function requestPayment(uint248 _amount, address _payer, string memory _reason) public {
+        if (_payer != address(0)) {
+            if (_payer != msg.sender) {
+                revert Easy2Pay__InvalidPayer(msg.sender);
+            }
+        }
+
         PayRequest memory newRequest = PayRequest({
             requester: msg.sender,
             requestId: requestCount,
