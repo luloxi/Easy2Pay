@@ -2,7 +2,7 @@
 
 💸 dApp for requesting payments specifying a reason, and sharing the request with a link or a QR code.
 
-Future versions will feature payment using different tokens (stablecoins, WBTC) using [Chainlink Price Feeds](https://docs.chain.link/data-feeds/price-feeds).
+Future versions will feature payment using different tokens (stablecoin, WBTC) using [Chainlink Price Feeds](https://docs.chain.link/data-feeds/price-feeds).
 
 ## How can I contribute to this build?
 
