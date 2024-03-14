@@ -53,7 +53,7 @@ const Home: NextPage = () => {
 
           <div className="card-actions justify-end p-4">
             <button
-              className="btn btn-primary bg-orange-500 mt-4"
+              className="btn btn-primary bg-orange-500 hover:bg-orange-600 mt-4"
               onClick={event => {
                 event.preventDefault();
                 requestPayment();
