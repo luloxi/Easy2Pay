@@ -25,6 +25,7 @@ contract Easy2Pay {
     );
     event RequestPaid(uint256 indexed requestId);
 
+    error Easy2Pay__InvalidRequest(address requester);
     error Easy2Pay__InvalidPayer(address payer);
     error Easy2Pay__InsufficientEther(uint256 requestedAmount, uint256 actualAmount);
     error Easy2Pay__PaymentAlreadyCompleted();
@@ -45,10 +46,8 @@ contract Easy2Pay {
     }
 
     function requestPayment(uint248 _amount, address _payer, string memory _reason) public {
-        if (_payer != address(0)) {
-            if (_payer != msg.sender) {
-                revert Easy2Pay__InvalidPayer(msg.sender);
-            }
+        if (_payer == msg.sender) {
+            revert Easy2Pay__InvalidRequest(msg.sender);
         }
 
         PayRequest memory newRequest = PayRequest({

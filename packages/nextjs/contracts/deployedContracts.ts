@@ -274,6 +274,17 @@ const deployedContracts = {
         },
         {
           type: "error",
+          name: "Easy2Pay__InvalidRequest",
+          inputs: [
+            {
+              name: "requester",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
           name: "Easy2Pay__PaymentAlreadyCompleted",
           inputs: [],
         },
@@ -288,7 +299,7 @@ const deployedContracts = {
   },
   11155111: {
     Easy2Pay: {
-      address: "0x1390a2812f583713cb9B7d05058790f5F34cfc39",
+      address: "0x5aaaDbEC3023Ab316364E97ABBC73231AcBB99fD",
       abi: [
         {
           type: "constructor",
@@ -548,6 +559,17 @@ const deployedContracts = {
           inputs: [
             {
               name: "payer",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "Easy2Pay__InvalidRequest",
+          inputs: [
+            {
+              name: "requester",
               type: "address",
               internalType: "address",
             },
