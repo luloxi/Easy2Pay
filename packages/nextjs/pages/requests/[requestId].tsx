@@ -1,5 +1,4 @@
-// pages/requests/[requestId].tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import QRCode from "qrcode.react";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -27,6 +26,12 @@ const RequestDetailsPage: React.FC = () => {
 
   const [copySuccess, setCopySuccess] = useState(false);
 
+  useEffect(() => {
+    if (requestIdString) {
+      document.title = `Payment Request #${requestIdString}`;
+    }
+  }, [requestIdString]);
+
   const handleCopyLink = () => {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl);
@@ -42,10 +47,10 @@ const RequestDetailsPage: React.FC = () => {
 
   return (
     <>
-      <MetaHeader title="Request a payment | Easy2Pay" description="List all payment requests" />
-      <div className="flex items-center flex-col flex-grow pt-10">
+      <MetaHeader title={`Request #${requestIdString} | Easy2Pay`} description="List all payment requests" />
+      <div className="flex items-center flex-col flex-grow pt-10 text-white">
         <div className="card w-96 bg-green-700 shadow-xl">
-          <h1 className="text-center mt-4 text-3xl">Payment Request #{requestIdString}</h1>
+          <h1 className="text-center mt-4 text-3xl">Request #{requestIdString}</h1>
           <div className="card-body ">
             <span className="flex flex-row gap-3">
               Requester: <Address address={requestData?.requester} />

@@ -20,7 +20,7 @@ const Home: NextPage = () => {
     <>
       <MetaHeader title="Request a payment | Easy2Pay" description="List all payment requests" />
 
-      <div className="flex items-center flex-col flex-grow pt-10">
+      <div className="flex items-center flex-col flex-grow pt-10 ">
         <h1 className="text-3xl">
           Welcome to{" "}
           <strong>
@@ -30,24 +30,32 @@ const Home: NextPage = () => {
         </h1>
         <p className="text-center">
           Create a payment request to a specific address, <br />
-          and share it as a QR code or an URL!
+          and <strong>share it as a QR code or an URL</strong>!
           <br />
           <i className="text-green-500">currently only accepting native ETH as payment currency</i>
         </p>
-        <div className="card w-96 bg-green-700 shadow-xl">
+        <div className="card w-96 bg-green-700 shadow-xl text-white">
           <div className="p-4">
-            <p className="mb-2">Enter the address of the payer of this request:</p>
+            <p className="mb-2">
+              Enter the <strong>address of the payer</strong> of this request:
+            </p>
             <AddressInput placeholder="0x..." value={payerAddress} onChange={setPayerAddress} />
             {payerAddress ? (
               <p className="flex flex-row my-2">
                 This address has <Balance address={payerAddress} /> available
               </p>
             ) : (
-              <p className="text-orange-500 text-center my-2">Enter an address to view their Balance!</p>
+              <p className="text-orange-500 text-center my-2">
+                <strong>Enter an address to view their Balance!</strong>
+              </p>
             )}
-            <p className="mb-2">Enter the amount of Ether you want to receive:</p>
+            <p className="mb-2">
+              Enter the <strong>amount of Ether</strong> you want to receive:
+            </p>
             <EtherInput value={etherAmount} placeholder="0.1" onChange={setEtherAmount} />
-            <p className="mb-2">Enter the reason of your request (optional):</p>
+            <p className="mb-2">
+              Enter the <strong>reason of your request</strong> (optional):
+            </p>
             <InputBase value={motive} placeholder="Pizza and beer" onChange={setMotive} />
           </div>
 
