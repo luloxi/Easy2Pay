@@ -6,7 +6,7 @@ import { isAddress } from "viem";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Address } from "~~/components/scaffold-eth";
-import { TokenAmount } from "~~/components/scaffold-eth/TokenAmount";
+import { EthAmount } from "~~/components/scaffold-eth/EthAmount";
 import { SearchBar } from "~~/components/searchBar/SearchBar";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 import { FilterProps } from "~~/types/Easy2PayTypes";
@@ -173,7 +173,7 @@ const Requests: NextPage = () => {
                         <Address address={request.payer} />{" "}
                       </td>
                       <td>
-                        <TokenAmount amount={request.amount ? parseInt(request.amount.toString()) : 0} isEth={true} />
+                        <EthAmount amount={request.amount ? parseInt(request.amount.toString()) : 0} />
                       </td>
                       <td>{request.reason}</td>
                       <td>

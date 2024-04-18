@@ -40,12 +40,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({ searchFilters, updateSearc
           <Button
             type="submit"
             variant="solid"
-            backgroundColor={"green"}
+            // backgroundColor={"green"}
             padding={4}
             paddingX={6}
             borderRadius={4}
             textColor={"white"}
-            colorScheme="orange"
+            colorScheme="green"
           >
             Search
           </Button>
@@ -53,6 +53,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ searchFilters, updateSearc
             type="button"
             variant="solid"
             backgroundColor={"red"}
+            colorScheme="red"
             padding={4}
             paddingX={6}
             borderRadius={4}

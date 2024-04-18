@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import QRCode from "qrcode.react";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Address } from "~~/components/scaffold-eth";
-import { TokenAmount } from "~~/components/scaffold-eth/TokenAmount";
+import { EthAmount } from "~~/components/scaffold-eth/EthAmount";
 import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const RequestDetailsPage: React.FC = () => {
@@ -59,7 +59,7 @@ const RequestDetailsPage: React.FC = () => {
               Payer: <Address address={requestData?.payer} />
             </span>
             <span className="flex flex-row gap-3">
-              Amount: <TokenAmount amount={Number(requestData?.amount ?? 0)} isEth={true} />
+              Amount: <EthAmount amount={Number(requestData?.amount ?? 0)} />
             </span>
 
             <span className="flex flex-row gap-3">Reason: {requestData?.reason}</span>
