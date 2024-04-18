@@ -58,7 +58,7 @@ const RequestDetailsPage: React.FC = () => {
             <span className="flex flex-row gap-3">
               Payer: <Address address={requestData?.payer} />
             </span>
-            <span className="flex flex-row gap-3">
+            <span className="flex flex-row items-center gap-3">
               Amount: <EthAmount amount={Number(requestData?.amount ?? 0)} />
             </span>
 
