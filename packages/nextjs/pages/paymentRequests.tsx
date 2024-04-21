@@ -148,6 +148,7 @@ const Requests: NextPage = () => {
             <table className="table table-zebra w-full">
               <thead className="text-center">
                 <tr>
+                  <th className="bg-primary">ID</th>
                   <th className="bg-primary">Requester</th>
                   <th className="bg-primary">Payer</th>
                   <th className="bg-primary">Amount</th>
@@ -166,6 +167,7 @@ const Requests: NextPage = () => {
                 ) : (
                   requestBox?.map((request, requestId) => (
                     <tr key={requestId}>
+                      <td>{request.requestId.toString()}</td>
                       <td>
                         <Address address={request.requester} />{" "}
                       </td>
