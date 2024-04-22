@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import QRCode from "qrcode.react";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { EthAmount } from "~~/components/easy2pay/EthAmount";
 import { Address } from "~~/components/scaffold-eth";
-import { EthAmount } from "~~/components/scaffold-eth/EthAmount";
 import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const RequestDetailsPage: React.FC = () => {

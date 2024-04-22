@@ -5,9 +5,9 @@ import { useInterval } from "usehooks-ts";
 import { isAddress } from "viem";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { EthAmount } from "~~/components/easy2pay/EthAmount";
+import { SearchBar } from "~~/components/easy2pay/SearchBar";
 import { Address } from "~~/components/scaffold-eth";
-import { EthAmount } from "~~/components/scaffold-eth/EthAmount";
-import { SearchBar } from "~~/components/searchBar/SearchBar";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 import { FilterProps } from "~~/types/Easy2PayTypes";
 
