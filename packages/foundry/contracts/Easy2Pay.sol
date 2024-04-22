@@ -1,20 +1,35 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-struct PayRequest {
-    address requester;
-    uint256 requestId;
-    address payer;
-    uint248 amount;
-    string reason;
-    bool completed;
-}
-
+/// @title A payment requesting contract
+/// @author Lulox
+/// @notice You can use this contract for requesting payments with a reason
+/// @dev This is a base contract that requires further development to include payment in other tokens
 contract Easy2Pay {
-    address public owner;
+    /*//////////////////////////////////////////////////////////////
+                                STRUCTS
+    //////////////////////////////////////////////////////////////*/
+
+    struct PayRequest {
+        address requester;
+        uint256 requestId;
+        address payer;
+        uint248 amount;
+        string reason;
+        bool completed;
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                            STATE VARIABLES
+    //////////////////////////////////////////////////////////////*/
+
     uint256 public requestCount;
 
     mapping(uint256 => PayRequest) public payRequestsById;
+
+    /*//////////////////////////////////////////////////////////////
+                                 EVENTS
+    //////////////////////////////////////////////////////////////*/
 
     event RequestCreated(
         uint256 indexed requestId,
@@ -26,6 +41,10 @@ contract Easy2Pay {
     );
     event RequestPaid(uint256 indexed requestId);
 
+    /*//////////////////////////////////////////////////////////////
+                                 ERRORS
+    //////////////////////////////////////////////////////////////*/
+
     error Easy2Pay__InvalidRequest(address requester);
     error Easy2Pay__InvalidPayer(address payer);
     error Easy2Pay__InsufficientEther(
@@ -36,10 +55,15 @@ contract Easy2Pay {
     error Easy2Pay__FailedToSendEther();
     error Easy2Pay__UnauthorizedAccess();
 
-    constructor() {
-        owner = msg.sender;
-    }
+    /*//////////////////////////////////////////////////////////////
+                            PUBLIC FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
 
+    /** @notice Request payment in ETH to a specific address with a reason
+     * @param _amount How much ETH is the payer expected to pay.
+     * @param _payer Who is expected to fulfill this payment
+     * @param _reason The reason why this payment is being required
+     */
     function requestPayment(
         uint248 _amount,
         address _payer,
@@ -72,6 +96,9 @@ contract Easy2Pay {
         requestCount++;
     }
 
+    /** @notice Pay a previously created paymentRequest by sending ETH
+     * @param _requestId ID for the paymentRequest being paid
+     */
     function pay(uint256 _requestId) public payable {
         PayRequest storage request = payRequestsById[_requestId];
 
@@ -94,10 +121,17 @@ contract Easy2Pay {
         emit RequestPaid(_requestId);
     }
 
+    /*//////////////////////////////////////////////////////////////
+                             VIEW FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+    /** @notice View information about a paymentRequest
+     * @param _requestId ID for the paymentRequest being consulted
+     */
     function getRequest(
-        uint256 requestId
+        uint256 _requestId
     ) public view returns (PayRequest memory) {
-        require(requestId <= requestCount, "Invalid requestId");
-        return payRequestsById[requestId];
+        require(_requestId <= requestCount, "Invalid requestId");
+        return payRequestsById[_requestId];
     }
 }
