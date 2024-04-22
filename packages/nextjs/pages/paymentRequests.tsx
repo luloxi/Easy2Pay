@@ -148,37 +148,37 @@ const Requests: NextPage = () => {
             <table className="table table-zebra w-full">
               <thead className="text-center">
                 <tr>
-                  <th className="bg-primary">ID</th>
-                  <th className="bg-primary">Requester</th>
-                  <th className="bg-primary">Payer</th>
-                  <th className="bg-primary">Amount</th>
-                  <th className="bg-primary">Reason</th>
-                  <th className="bg-primary">Link</th>
-                  <th className="bg-primary">Complete</th>
+                  <th className="bg-primary px-4 py-2">ID</th>
+                  <th className="bg-primary px-4 py-2">Requester</th>
+                  <th className="bg-primary px-4 py-2">Payer</th>
+                  <th className="bg-primary px-4 py-2">Amount</th>
+                  <th className="bg-primary px-4 py-2">Reason</th>
+                  <th className="bg-primary px-4 py-2">Link</th>
+                  <th className="bg-primary px-4 py-2">Complete</th>
                 </tr>
               </thead>
               <tbody>
                 {!requestBox || requestBox.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="text-center">
+                    <td colSpan={7} className="text-center border-t border-b">
                       No requests found!
                     </td>
                   </tr>
                 ) : (
                   requestBox?.map((request, requestId) => (
-                    <tr key={requestId}>
-                      <td>{request.requestId.toString()}</td>
-                      <td>
-                        <Address address={request.requester} />{" "}
+                    <tr key={requestId} className="border-t border-b">
+                      <td className="border-t border-b">{request.requestId.toString()}</td>
+                      <td className="border-t border-b">
+                        <Address address={request.requester} />
                       </td>
-                      <td>
-                        <Address address={request.payer} />{" "}
+                      <td className="border-t border-b">
+                        <Address address={request.payer} />
                       </td>
-                      <td>
+                      <td className="border-t border-b">
                         <EthAmount amount={request.amount ? parseInt(request.amount.toString()) : 0} />
                       </td>
-                      <td>{request.reason}</td>
-                      <td>
+                      <td className="border-t border-b">{request.reason}</td>
+                      <td className="border-t border-b">
                         <button
                           className="btn btn-primary bg-orange-500 hover:bg-orange-600 border-none"
                           onClick={() => showLink(requestId)}
@@ -186,7 +186,7 @@ const Requests: NextPage = () => {
                           View
                         </button>
                       </td>
-                      <td>{request.completed ? "Yes" : "No"}</td>
+                      <td className="border-t border-b">{request.completed ? "Yes" : "No"}</td>
                     </tr>
                   ))
                 )}
