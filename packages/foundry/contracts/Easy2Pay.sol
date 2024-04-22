@@ -96,8 +96,8 @@ contract Easy2Pay {
         requestCount++;
     }
 
-    /** @notice Pay a previously created paymentRequest by sending ETH
-     * @param _requestId ID for the paymentRequest being paid
+    /** @notice Pay a previously created PayRequest by sending ETH
+     * @param _requestId ID for the PayRequest being paid
      */
     function pay(uint256 _requestId) public payable {
         PayRequest storage request = payRequestsById[_requestId];
@@ -125,8 +125,9 @@ contract Easy2Pay {
                              VIEW FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    /** @notice View information about a paymentRequest
-     * @param _requestId ID for the paymentRequest being consulted
+    /** @notice View information about a PayRequest
+     * @param _requestId ID for the PayRequest being consulted
+     * @return PayRequest A struct containing info about the consulted PayRequest
      */
     function getRequest(
         uint256 _requestId
