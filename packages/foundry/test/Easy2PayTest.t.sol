@@ -52,4 +52,10 @@ contract Easy2PayTest is Test {
         vm.expectRevert();
         easy2pay.pay{value: REQUEST_VALUE}(0);
     }
+
+    function testRevertsIfPayerIsMsgSender() public {
+        vm.prank(USER1);
+        vm.expectRevert();
+        easy2pay.requestPayment(uint248(REQUEST_VALUE), USER1, "Test");
+    }
 }
