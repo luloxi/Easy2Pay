@@ -7,16 +7,30 @@ import {Easy2Pay} from "../contracts/Easy2Pay.sol";
 contract Easy2PayTest is Test {
     Easy2Pay easy2pay;
 
+    address USER1 = makeAddr("user1");
+    address USER2 = makeAddr("user2");
+    uint256 constant REQUEST_VALUE = 0.1 ether;
+    uint256 constant STARTING_BALANCE = 1 ether;
+
     function setUp() external {
         easy2pay = new Easy2Pay();
+        vm.deal(USER1, STARTING_BALANCE);
+        vm.deal(USER2, STARTING_BALANCE);
     }
 
-    function testOwnerIsMsgSender() public {
-        assertEq(easy2pay.owner(), address(this));
+    function testExactPaymentFulfill() public {
+        vm.prank(USER1);
+        easy2pay.requestPayment(uint248(REQUEST_VALUE), USER2, "Test");
+        vm.prank(USER2);
+        easy2pay.pay{value: REQUEST_VALUE}(0);
+        assertEq(address(USER1).balance, STARTING_BALANCE + REQUEST_VALUE);
     }
 
-    // function testPriceFeedVersionIsAccurate() public {
-    //     uint256 version = easy2pay.getVersion();
-    //     assertEq(version, 4);
-    // }
+    function testRevertOnUnderPayment() public {
+        vm.prank(USER1);
+        easy2pay.requestPayment(uint248(REQUEST_VALUE), USER2, "Test");
+        vm.prank(USER2);
+        vm.expectRevert();
+        easy2pay.pay{value: REQUEST_VALUE - 1}(0);
+    }
 }

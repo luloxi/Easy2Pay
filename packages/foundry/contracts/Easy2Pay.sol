@@ -108,7 +108,7 @@ contract Easy2Pay {
             }
         }
 
-        if (request.amount < msg.value) {
+        if (request.amount > msg.value) {
             revert Easy2Pay__InsufficientEther(request.amount, msg.value);
         }
 
