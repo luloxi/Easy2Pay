@@ -53,7 +53,6 @@ contract Easy2Pay {
     );
     error Easy2Pay__PaymentAlreadyCompleted();
     error Easy2Pay__FailedToSendEther();
-    error Easy2Pay__UnauthorizedAccess();
 
     /*//////////////////////////////////////////////////////////////
                             PUBLIC FUNCTIONS
