@@ -4,7 +4,7 @@ import QRCode from "qrcode.react";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { EthAmount } from "~~/components/easy2pay/EthAmount";
 import { Address } from "~~/components/scaffold-eth";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const RequestDetailsPage: React.FC = () => {
   const router = useRouter();
@@ -22,6 +22,20 @@ const RequestDetailsPage: React.FC = () => {
     functionName: "pay",
     args: [BigInt(requestIdString)],
     value: BigInt(requestData?.amount ?? 0),
+  });
+
+  const { data: easy2PayInfo } = useDeployedContractInfo("Easy2Pay");
+
+  const { writeAsync: approve } = useScaffoldContractWrite({
+    contractName: "USDC",
+    functionName: "approve",
+    args: [easy2PayInfo?.address, 2n ** 256n - 1n],
+  });
+
+  const { writeAsync: payWithUsdc } = useScaffoldContractWrite({
+    contractName: "Easy2Pay",
+    functionName: "payWithUsdc",
+    args: [BigInt(requestIdString)],
   });
 
   const [copySuccess, setCopySuccess] = useState(false);
@@ -73,7 +87,27 @@ const RequestDetailsPage: React.FC = () => {
                   pay();
                 }}
               >
-                Send payment
+                Pay with ETH
+              </button>
+            </div>
+            <div className="card-actions justify-end">
+              <button
+                className="btn btn-primary bg-blue-600 hover:bg-blue-700"
+                onClick={event => {
+                  event.preventDefault();
+                  approve();
+                }}
+              >
+                Approve USDC
+              </button>
+              <button
+                className="btn btn-primary bg-blue-600 hover:bg-blue-700"
+                onClick={event => {
+                  event.preventDefault();
+                  payWithUsdc();
+                }}
+              >
+                Pay with USDC
               </button>
             </div>
           </div>

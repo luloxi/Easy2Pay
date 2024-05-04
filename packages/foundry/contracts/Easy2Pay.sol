@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 /// @title A payment requesting contract
 /// @author Lulox
 /// @notice You can use this contract for requesting payments with a reason
@@ -14,7 +17,7 @@ contract Easy2Pay {
         address requester;
         uint256 requestId;
         address payer;
-        uint248 amount;
+        uint256 amount;
         string reason;
         bool completed;
     }
@@ -23,8 +26,10 @@ contract Easy2Pay {
                             STATE VARIABLES
     //////////////////////////////////////////////////////////////*/
 
-    uint256 public requestCount;
+    AggregatorV3Interface internal ethUsdPriceFeed;
+    IERC20 internal usdcToken;
 
+    uint256 public requestCount;
     mapping(uint256 => PayRequest) public payRequestsById;
 
     /*//////////////////////////////////////////////////////////////
@@ -47,10 +52,7 @@ contract Easy2Pay {
 
     error Easy2Pay__InvalidRequest(address requester);
     error Easy2Pay__InvalidPayer(address payer);
-    error Easy2Pay__InsufficientEther(
-        uint256 requestedAmount,
-        uint256 actualAmount
-    );
+    error Easy2Pay__InsufficientEther(uint256 requestedAmount, uint256 actualAmount);
     error Easy2Pay__PaymentAlreadyCompleted();
     error Easy2Pay__FailedToSendEther();
 
@@ -58,16 +60,18 @@ contract Easy2Pay {
                             PUBLIC FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    /** @notice Request payment in ETH to a specific address with a reason
+    constructor(address _ethUsdPriceFeed, address _usdcTokenAddress) {
+        ethUsdPriceFeed = AggregatorV3Interface(_ethUsdPriceFeed);
+        usdcToken = IERC20(_usdcTokenAddress);
+    }
+
+    /**
+     * @notice Request payment in ETH to a specific address with a reason
      * @param _amount How much ETH is the payer expected to pay.
      * @param _payer Who is expected to fulfill this payment
      * @param _reason The reason why this payment is being required
      */
-    function requestPayment(
-        uint248 _amount,
-        address _payer,
-        string memory _reason
-    ) public {
+    function requestPayment(uint248 _amount, address _payer, string memory _reason) public {
         if (_payer == msg.sender) {
             revert Easy2Pay__InvalidRequest(msg.sender);
         }
@@ -83,31 +87,23 @@ contract Easy2Pay {
 
         payRequestsById[requestCount] = newRequest;
 
-        emit RequestCreated(
-            requestCount,
-            msg.sender,
-            _payer,
-            _amount,
-            _reason,
-            block.timestamp
-        );
+        emit RequestCreated(requestCount, msg.sender, _payer, _amount, _reason, block.timestamp);
 
         requestCount++;
     }
 
-    /** @notice Pay a previously created PayRequest by sending ETH
+    /**
+     * @notice Pay a previously created PayRequest by sending ETH
      * @param _requestId ID for the PayRequest being paid
      */
     function pay(uint256 _requestId) public payable {
         PayRequest storage request = payRequestsById[_requestId];
 
-        if (request.payer != address(0)) {
-            if (request.payer != msg.sender) {
-                revert Easy2Pay__InvalidPayer(msg.sender);
-            }
+        if (request.payer != msg.sender) {
+            revert Easy2Pay__InvalidPayer(msg.sender);
         }
 
-        if (request.amount > msg.value) {
+        if (msg.value < request.amount) {
             revert Easy2Pay__InsufficientEther(request.amount, msg.value);
         }
 
@@ -115,23 +111,57 @@ contract Easy2Pay {
 
         request.completed = true;
 
-        (bool sent, ) = request.requester.call{value: msg.value}("");
+        (bool sent,) = request.requester.call{value: msg.value}("");
         if (!sent) revert Easy2Pay__FailedToSendEther();
         emit RequestPaid(_requestId);
+    }
+
+    /**
+     * @notice Pay a previously created PayRequest by sending USDC
+     * @param _requestId ID for the PayRequest being paid
+     */
+    function payWithUsdc(uint256 _requestId) public {
+        PayRequest storage request = payRequestsById[_requestId];
+
+        if (request.payer != msg.sender) {
+            revert Easy2Pay__InvalidPayer(msg.sender);
+        }
+
+        if (request.completed) revert Easy2Pay__PaymentAlreadyCompleted();
+
+        // Fetch the latest ETH price
+        uint256 ethPrice = getLatestEthPrice();
+        // Convert the requested ETH amount to USDC (6 decimals)
+        uint256 usdcAmount = (ethPrice * request.amount) / 1e30; // Scaling from 36 to 6 decimals
+        require(usdcToken.balanceOf(msg.sender) >= usdcAmount, "Insufficient USDC");
+
+        request.completed = true;
+        emit RequestPaid(_requestId);
+
+        usdcToken.transferFrom(msg.sender, request.requester, usdcAmount);
     }
 
     /*//////////////////////////////////////////////////////////////
                              VIEW FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    /** @notice View information about a PayRequest
+    /**
+     * @notice View information about a PayRequest
      * @param _requestId ID for the PayRequest being consulted
      * @return PayRequest A struct containing info about the consulted PayRequest
      */
-    function getRequest(
-        uint256 _requestId
-    ) public view returns (PayRequest memory) {
+    function getRequest(uint256 _requestId) public view returns (PayRequest memory) {
         require(_requestId <= requestCount, "Invalid requestId");
         return payRequestsById[_requestId];
+    }
+
+    /**
+     * @notice View current ETH price on Chainlink Price Feeds
+     * @return A 18 digit uint256 with the current price of ETH
+     */
+    function getLatestEthPrice() internal view returns (uint256) {
+        (, int256 answer,,,) = ethUsdPriceFeed.latestRoundData();
+        // answer is in int256 and 1e8 format
+        return uint256(answer * 1e10); // ETH/USD rate in uint256 with 18 digits
     }
 }

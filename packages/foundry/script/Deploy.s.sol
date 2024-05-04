@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "../contracts/Easy2Pay.sol";
+import "../contracts/test/MockUSDC.sol";
 import "./DeployHelpers.s.sol";
 
 contract DeployScript is ScaffoldETHDeploy {
@@ -15,13 +16,17 @@ contract DeployScript is ScaffoldETHDeploy {
             );
         }
         vm.startBroadcast(deployerPrivateKey);
-        Easy2Pay easy2Pay = new Easy2Pay();
-        console.logString(
-            string.concat(
-                "Easy2Pay deployed at: ",
-                vm.toString(address(easy2Pay))
-            )
-        );
+
+        // Sepolia deploy
+        // address ethUsdPriceFeedSepolia = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
+        // MockUSDC mockUSDC = new MockUSDC();
+        // Easy2Pay easy2Pay = new Easy2Pay(ethUsdPriceFeedSepolia, address(mockUSDC));
+
+        // // Arbitrum deploy
+        address ethUsdPriceFeedArbitrum = 0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612;
+        address usdcTokenAddress = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831; // USDC on Arbitrum
+        Easy2Pay easy2Pay = new Easy2Pay(ethUsdPriceFeedArbitrum, usdcTokenAddress);
+        console.logString(string.concat("Easy2Pay deployed at: ", vm.toString(address(easy2Pay))));
         vm.stopBroadcast();
 
         /**
@@ -31,6 +36,4 @@ contract DeployScript is ScaffoldETHDeploy {
          */
         exportDeployments();
     }
-
-    
 }
