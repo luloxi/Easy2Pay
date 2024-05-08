@@ -1,19 +1,17 @@
 import { useState } from "react";
 import type { NextPage } from "next";
-import { parseEther } from "viem";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { AddressInput, Balance, EtherInput, InputBase } from "~~/components/scaffold-eth";
+import { InputBase } from "~~/components/scaffold-eth";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
-  const [payerAddress, setPayerAddress] = useState("");
-  const [etherAmount, setEtherAmount] = useState("");
-  const [motive, setMotive] = useState("");
+  const [usdAmount, setUsdAmount] = useState<number>(0);
+  const [reason, setReason] = useState("");
 
   const { writeAsync: requestPayment } = useScaffoldContractWrite({
     contractName: "Easy2Pay",
     functionName: "requestPayment",
-    args: [parseEther(etherAmount), payerAddress, motive],
+    args: [BigInt(usdAmount * 10e5), reason],
   });
 
   return (
@@ -29,39 +27,26 @@ const Home: NextPage = () => {
           !
         </h1>
         <p className="text-center">
-          Create a payment request to a specific address, <br />
+          Create a payment request <br />
           and <strong>share it as a QR code or an URL</strong>!
           <br />
-          <i className="text-green-500">currently only accepting native ETH as payment currency</i>
+          <i className="text-green-500">currently accepting native ETH and USDC as payment methods</i>
         </p>
         <div className="card w-96 bg-green-700 shadow-xl text-white">
           <div className="p-4">
             <p className="mb-2">
-              Enter the <strong>address of the payer</strong> of this request:
+              Enter the <strong>amount of USD</strong> you want to receive:
             </p>
-            <AddressInput placeholder="0x..." value={payerAddress} onChange={setPayerAddress} />
-            {payerAddress ? (
-              <p className="flex flex-row my-2">
-                This address has <Balance address={payerAddress} /> available
-              </p>
-            ) : (
-              <p className="text-orange-500 text-center my-2">
-                <strong>Enter an address to view their Balance!</strong>
-              </p>
-            )}
-            <p className="mb-2">
-              Enter the <strong>amount of Ether</strong> you want to receive:
-            </p>
-            <EtherInput value={etherAmount} placeholder="0.1" onChange={setEtherAmount} />
+            <InputBase value={usdAmount} placeholder="15" onChange={setUsdAmount} />
             <p className="mb-2">
               Enter the <strong>reason of your request</strong> (optional):
             </p>
-            <InputBase value={motive} placeholder="Pizza and beer" onChange={setMotive} />
+            <InputBase value={reason} placeholder="Pizza and beer" onChange={setReason} />
           </div>
 
           <div className="card-actions justify-end p-4">
             <button
-              className="btn btn-primary bg-orange-500 hover:bg-orange-600 mt-4"
+              className="btn btn-primary bg-orange-500 hover:bg-orange-600 border-none mt-4"
               onClick={event => {
                 event.preventDefault();
                 requestPayment();

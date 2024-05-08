@@ -5,7 +5,6 @@ import { useInterval } from "usehooks-ts";
 import { isAddress } from "viem";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { EthAmount } from "~~/components/easy2pay/EthAmount";
 import { SearchBar } from "~~/components/easy2pay/SearchBar";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
@@ -14,7 +13,6 @@ import { FilterProps } from "~~/types/Easy2PayTypes";
 interface PaymentRequest {
   requestId: number;
   requester: string;
-  payer: string;
   amount: bigint;
   completed: boolean;
   reason: string;
@@ -25,7 +23,6 @@ const Requests: NextPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchFilters, setSearchFilters] = useState<FilterProps[]>([
     { label: "Only requests made", selected: false },
-    { label: "Only requests received", selected: false },
     { label: "Only completed requests", selected: false },
   ]);
   const [requestBox, setRequestBox] = useState<PaymentRequest[]>([]);
@@ -57,10 +54,6 @@ const Requests: NextPage = () => {
       }
 
       if (searchFilters[1]?.selected) {
-        filteredData = createdData?.filter((event: any) => event.args["payer"] === address);
-      }
-
-      if (searchFilters[2]?.selected) {
         filteredData = filteredData?.filter((event1: any) =>
           paidData?.some((event2: any) => event1?.args?.["requestId"] === event2?.args?.["requestId"]),
         );
@@ -83,7 +76,6 @@ const Requests: NextPage = () => {
           requestId: requestId,
           amount: event.args.amount,
           completed: completed || false,
-          payer: event.args.payer,
           requester: event.args.requester,
           reason: event.args.reason,
         };
@@ -150,7 +142,7 @@ const Requests: NextPage = () => {
                 <tr>
                   <th className="bg-primary px-4 py-2">ID</th>
                   <th className="bg-primary px-4 py-2">Requester</th>
-                  <th className="bg-primary px-4 py-2">Payer</th>
+
                   <th className="bg-primary px-4 py-2">Amount</th>
                   <th className="bg-primary px-4 py-2">Reason</th>
                   <th className="bg-primary px-4 py-2">Link</th>
@@ -171,12 +163,8 @@ const Requests: NextPage = () => {
                       <td className="border-t border-b">
                         <Address address={request.requester} />
                       </td>
-                      <td className="border-t border-b">
-                        <Address address={request.payer} />
-                      </td>
-                      <td className="border-t border-b">
-                        <EthAmount amount={request.amount ? parseInt(request.amount.toString()) : 0} />
-                      </td>
+
+                      <td className="border-t border-b">${(Number(request.amount ?? 0) / 1000000).toFixed(2)}</td>
                       <td className="border-t border-b">{request.reason}</td>
                       <td className="border-t border-b">
                         <button

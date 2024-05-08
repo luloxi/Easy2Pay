@@ -1,5 +1,5 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.19;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
 // import {Test, console} from "forge-std/Test.sol";
 // import {Easy2Pay} from "../contracts/Easy2Pay.sol";

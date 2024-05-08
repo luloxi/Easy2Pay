@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import QRCode from "qrcode.react";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { EthAmount } from "~~/components/easy2pay/EthAmount";
 import { Address } from "~~/components/scaffold-eth";
-import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import {
+  useDeployedContractInfo,
+  useScaffoldContractRead,
+  useScaffoldContractWrite,
+  useScaffoldEventHistory,
+} from "~~/hooks/scaffold-eth";
 
 const RequestDetailsPage: React.FC = () => {
   const router = useRouter();
@@ -17,11 +21,35 @@ const RequestDetailsPage: React.FC = () => {
     args: [BigInt(requestIdString)],
   });
 
-  const { writeAsync: pay } = useScaffoldContractWrite({
+  const { data: requestAmountInEth } = useScaffoldContractRead({
     contractName: "Easy2Pay",
-    functionName: "pay",
+    functionName: "getRequestAmountInEth",
     args: [BigInt(requestIdString)],
-    value: BigInt(requestData?.amount ?? 0),
+  });
+
+  const { data: RequestPaidHistory } = useScaffoldEventHistory({
+    contractName: "Easy2Pay",
+    eventName: "RequestPaid",
+    fromBlock: BigInt(process.env.NEXT_PUBLIC_DEPLOY_BLOCK || "0"),
+    watch: true,
+  });
+
+  // Function to find who paid for the request
+  const findPayer = () => {
+    if (RequestPaidHistory && requestData) {
+      const paidEvent = RequestPaidHistory.find((event: any) => event.args.requestId.toString() === requestIdString);
+      if (paidEvent) {
+        return paidEvent.args.payer;
+      }
+    }
+    return "Unknown";
+  };
+
+  const { writeAsync: payWithEth } = useScaffoldContractWrite({
+    contractName: "Easy2Pay",
+    functionName: "payWithEth",
+    args: [BigInt(requestIdString)],
+    value: BigInt(requestAmountInEth ?? 0),
   });
 
   const { data: easy2PayInfo } = useDeployedContractInfo("Easy2Pay");
@@ -29,7 +57,7 @@ const RequestDetailsPage: React.FC = () => {
   const { writeAsync: approve } = useScaffoldContractWrite({
     contractName: "USDC",
     functionName: "approve",
-    args: [easy2PayInfo?.address, 2n ** 256n - 1n],
+    args: [easy2PayInfo?.address, BigInt(requestData?.amount ?? 0)],
   });
 
   const { writeAsync: payWithUsdc } = useScaffoldContractWrite({
@@ -63,28 +91,33 @@ const RequestDetailsPage: React.FC = () => {
     <>
       <MetaHeader title={`Request #${requestIdString} | Easy2Pay`} description="List all payment requests" />
       <div className="flex items-center flex-col flex-grow pt-10 text-white">
-        <div className="card w-96 bg-green-700 shadow-xl">
+        <div className={`card w-96 ${requestData?.completed ? "bg-green-700" : "bg-red-700"} shadow-xl`}>
           <h1 className="text-center mt-4 text-3xl">Request #{requestIdString}</h1>
           <div className="card-body ">
             <span className="flex flex-row gap-3">
               Requester: <Address address={requestData?.requester} />
             </span>
-            <span className="flex flex-row gap-3">
-              Payer: <Address address={requestData?.payer} />
-            </span>
+
             <span className="flex flex-row items-center gap-3">
-              Amount: <EthAmount amount={Number(requestData?.amount ?? 0)} />
+              Amount: ${(Number(requestData?.amount ?? 0) / 1000000).toFixed(2)}
             </span>
 
             <span className="flex flex-row gap-3">Reason: {requestData?.reason}</span>
             <span className="flex flex-row gap-3">Completed: {requestData?.completed ? "Yes" : "No"}</span>
 
+            {/* Display who paid for the request */}
+            {requestData?.completed && (
+              <span className="flex flex-row gap-3">
+                Paid by: <Address address={findPayer()} />
+              </span>
+            )}
+
             <div className="card-actions justify-end">
               <button
-                className="btn btn-primary bg-orange-500 hover:bg-orange-600"
+                className="btn btn-primary bg-orange-500 hover:bg-orange-600 border-none"
                 onClick={event => {
                   event.preventDefault();
-                  pay();
+                  payWithEth();
                 }}
               >
                 Pay with ETH
@@ -92,7 +125,7 @@ const RequestDetailsPage: React.FC = () => {
             </div>
             <div className="card-actions justify-end">
               <button
-                className="btn btn-primary bg-blue-600 hover:bg-blue-700"
+                className="btn btn-primary bg-blue-600 hover:bg-blue-700 border-none"
                 onClick={event => {
                   event.preventDefault();
                   approve();
@@ -101,7 +134,7 @@ const RequestDetailsPage: React.FC = () => {
                 Approve USDC
               </button>
               <button
-                className="btn btn-primary bg-blue-600 hover:bg-blue-700"
+                className="btn btn-primary bg-blue-600 hover:bg-blue-700 border-none"
                 onClick={event => {
                   event.preventDefault();
                   payWithUsdc();

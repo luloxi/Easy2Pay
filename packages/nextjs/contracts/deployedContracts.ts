@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     MockUSDC: {
-      address: "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      address: "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
       abi: [
         {
           type: "constructor",
@@ -354,7 +354,7 @@ const deployedContracts = {
       },
     },
     Easy2Pay: {
-      address: "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+      address: "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9",
       abi: [
         {
           type: "constructor",
@@ -371,6 +371,19 @@ const deployedContracts = {
             },
           ],
           stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "getLatestEthPrice",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -399,11 +412,6 @@ const deployedContracts = {
                   internalType: "uint256",
                 },
                 {
-                  name: "payer",
-                  type: "address",
-                  internalType: "address",
-                },
-                {
                   name: "amount",
                   type: "uint256",
                   internalType: "uint256",
@@ -425,7 +433,7 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "pay",
+          name: "getRequestAmountInEth",
           inputs: [
             {
               name: "_requestId",
@@ -433,8 +441,14 @@ const deployedContracts = {
               internalType: "uint256",
             },
           ],
-          outputs: [],
-          stateMutability: "payable",
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -458,11 +472,6 @@ const deployedContracts = {
               internalType: "uint256",
             },
             {
-              name: "payer",
-              type: "address",
-              internalType: "address",
-            },
-            {
               name: "amount",
               type: "uint256",
               internalType: "uint256",
@@ -479,6 +488,19 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "payWithEth",
+          inputs: [
+            {
+              name: "_requestId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [],
+          stateMutability: "payable",
         },
         {
           type: "function",
@@ -512,13 +534,8 @@ const deployedContracts = {
           inputs: [
             {
               name: "_amount",
-              type: "uint248",
-              internalType: "uint248",
-            },
-            {
-              name: "_payer",
-              type: "address",
-              internalType: "address",
+              type: "uint256",
+              internalType: "uint256",
             },
             {
               name: "_reason",
@@ -541,12 +558,6 @@ const deployedContracts = {
             },
             {
               name: "requester",
-              type: "address",
-              indexed: true,
-              internalType: "address",
-            },
-            {
-              name: "payer",
               type: "address",
               indexed: true,
               internalType: "address",
@@ -582,17 +593,18 @@ const deployedContracts = {
               indexed: true,
               internalType: "uint256",
             },
+            {
+              name: "payer",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
           ],
           anonymous: false,
         },
         {
           type: "error",
           name: "Easy2Pay__FailedToSendEther",
-          inputs: [],
-        },
-        {
-          type: "error",
-          name: "Easy2Pay__FailedToSendUsdc",
           inputs: [],
         },
         {
@@ -613,25 +625,8 @@ const deployedContracts = {
         },
         {
           type: "error",
-          name: "Easy2Pay__InvalidPayer",
-          inputs: [
-            {
-              name: "payer",
-              type: "address",
-              internalType: "address",
-            },
-          ],
-        },
-        {
-          type: "error",
-          name: "Easy2Pay__InvalidRequest",
-          inputs: [
-            {
-              name: "requester",
-              type: "address",
-              internalType: "address",
-            },
-          ],
+          name: "Easy2Pay__InsufficientUSDC",
+          inputs: [],
         },
         {
           type: "error",
@@ -644,7 +639,7 @@ const deployedContracts = {
   },
   42161: {
     Easy2Pay: {
-      address: "0x312504ef3562d2b06b52f8b657fe60171ff94410",
+      address: "0x73b6034056aca274f7a04685b8c9466b34bb52c4",
       abi: [
         {
           type: "constructor",
@@ -661,6 +656,19 @@ const deployedContracts = {
             },
           ],
           stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "getLatestEthPrice",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -689,11 +697,6 @@ const deployedContracts = {
                   internalType: "uint256",
                 },
                 {
-                  name: "payer",
-                  type: "address",
-                  internalType: "address",
-                },
-                {
                   name: "amount",
                   type: "uint256",
                   internalType: "uint256",
@@ -715,7 +718,7 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "pay",
+          name: "getRequestAmountInEth",
           inputs: [
             {
               name: "_requestId",
@@ -723,8 +726,14 @@ const deployedContracts = {
               internalType: "uint256",
             },
           ],
-          outputs: [],
-          stateMutability: "payable",
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -748,11 +757,6 @@ const deployedContracts = {
               internalType: "uint256",
             },
             {
-              name: "payer",
-              type: "address",
-              internalType: "address",
-            },
-            {
               name: "amount",
               type: "uint256",
               internalType: "uint256",
@@ -769,6 +773,19 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "payWithEth",
+          inputs: [
+            {
+              name: "_requestId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [],
+          stateMutability: "payable",
         },
         {
           type: "function",
@@ -802,13 +819,8 @@ const deployedContracts = {
           inputs: [
             {
               name: "_amount",
-              type: "uint248",
-              internalType: "uint248",
-            },
-            {
-              name: "_payer",
-              type: "address",
-              internalType: "address",
+              type: "uint256",
+              internalType: "uint256",
             },
             {
               name: "_reason",
@@ -831,12 +843,6 @@ const deployedContracts = {
             },
             {
               name: "requester",
-              type: "address",
-              indexed: true,
-              internalType: "address",
-            },
-            {
-              name: "payer",
               type: "address",
               indexed: true,
               internalType: "address",
@@ -872,17 +878,18 @@ const deployedContracts = {
               indexed: true,
               internalType: "uint256",
             },
+            {
+              name: "payer",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
           ],
           anonymous: false,
         },
         {
           type: "error",
           name: "Easy2Pay__FailedToSendEther",
-          inputs: [],
-        },
-        {
-          type: "error",
-          name: "Easy2Pay__FailedToSendUsdc",
           inputs: [],
         },
         {
@@ -903,25 +910,8 @@ const deployedContracts = {
         },
         {
           type: "error",
-          name: "Easy2Pay__InvalidPayer",
-          inputs: [
-            {
-              name: "payer",
-              type: "address",
-              internalType: "address",
-            },
-          ],
-        },
-        {
-          type: "error",
-          name: "Easy2Pay__InvalidRequest",
-          inputs: [
-            {
-              name: "requester",
-              type: "address",
-              internalType: "address",
-            },
-          ],
+          name: "Easy2Pay__InsufficientUSDC",
+          inputs: [],
         },
         {
           type: "error",
@@ -934,7 +924,7 @@ const deployedContracts = {
   },
   11155111: {
     MockUSDC: {
-      address: "0x9e40cc39210f7c67d1609fb34b98cb0e00868b7d",
+      address: "0xa81d43b6302f9c1954cd21a437c61a18766a31d0",
       abi: [
         {
           type: "constructor",
@@ -1281,7 +1271,7 @@ const deployedContracts = {
       },
     },
     Easy2Pay: {
-      address: "0x458e59d2d5928da39ee10a0f02e4425907425165",
+      address: "0x9518e478e3a9a12e20bcddb782269f919a94877c",
       abi: [
         {
           type: "constructor",
@@ -1298,6 +1288,19 @@ const deployedContracts = {
             },
           ],
           stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "getLatestEthPrice",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -1326,11 +1329,6 @@ const deployedContracts = {
                   internalType: "uint256",
                 },
                 {
-                  name: "payer",
-                  type: "address",
-                  internalType: "address",
-                },
-                {
                   name: "amount",
                   type: "uint256",
                   internalType: "uint256",
@@ -1352,7 +1350,7 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "pay",
+          name: "getRequestAmountInEth",
           inputs: [
             {
               name: "_requestId",
@@ -1360,8 +1358,14 @@ const deployedContracts = {
               internalType: "uint256",
             },
           ],
-          outputs: [],
-          stateMutability: "payable",
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -1385,11 +1389,6 @@ const deployedContracts = {
               internalType: "uint256",
             },
             {
-              name: "payer",
-              type: "address",
-              internalType: "address",
-            },
-            {
               name: "amount",
               type: "uint256",
               internalType: "uint256",
@@ -1406,6 +1405,19 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "payWithEth",
+          inputs: [
+            {
+              name: "_requestId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [],
+          stateMutability: "payable",
         },
         {
           type: "function",
@@ -1439,13 +1451,8 @@ const deployedContracts = {
           inputs: [
             {
               name: "_amount",
-              type: "uint248",
-              internalType: "uint248",
-            },
-            {
-              name: "_payer",
-              type: "address",
-              internalType: "address",
+              type: "uint256",
+              internalType: "uint256",
             },
             {
               name: "_reason",
@@ -1468,12 +1475,6 @@ const deployedContracts = {
             },
             {
               name: "requester",
-              type: "address",
-              indexed: true,
-              internalType: "address",
-            },
-            {
-              name: "payer",
               type: "address",
               indexed: true,
               internalType: "address",
@@ -1509,17 +1510,18 @@ const deployedContracts = {
               indexed: true,
               internalType: "uint256",
             },
+            {
+              name: "payer",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
           ],
           anonymous: false,
         },
         {
           type: "error",
           name: "Easy2Pay__FailedToSendEther",
-          inputs: [],
-        },
-        {
-          type: "error",
-          name: "Easy2Pay__FailedToSendUsdc",
           inputs: [],
         },
         {
@@ -1540,25 +1542,8 @@ const deployedContracts = {
         },
         {
           type: "error",
-          name: "Easy2Pay__InvalidPayer",
-          inputs: [
-            {
-              name: "payer",
-              type: "address",
-              internalType: "address",
-            },
-          ],
-        },
-        {
-          type: "error",
-          name: "Easy2Pay__InvalidRequest",
-          inputs: [
-            {
-              name: "requester",
-              type: "address",
-              internalType: "address",
-            },
-          ],
+          name: "Easy2Pay__InsufficientUSDC",
+          inputs: [],
         },
         {
           type: "error",
